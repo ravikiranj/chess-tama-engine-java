@@ -1,6 +1,6 @@
 package com.chesstama.engine;
 
-import com.chesstama.bitmath.BitMath;
+import com.chesstama.bitmath.BitMathUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,23 +48,23 @@ Row  +----+----+----+----+----+
         p2Pawns = 0xD8000000;
     }
 
-    public Position getKingPosition(PlayerType playerType) {
+    public Position getKingPosition(final PlayerType playerType) {
         int kingPosition = playerType == PlayerType.P1 ? p1King : p2King;
         int oneDimensionBoardPos = get1DBoardPosition(kingPosition);
         return get2DBoardPosition(oneDimensionBoardPos);
     }
 
-    private int get1DBoardPosition(int piecePosition) {
+    private int get1DBoardPosition(final int piecePosition) {
         // Find the rightmost set bit using (N & ~(N-1))
-        int pos = BitMath.log2(piecePosition & ~(piecePosition - 1));
+        int pos = BitMathUtil.log2(piecePosition & ~(piecePosition - 1));
         return BOARD_INDEX_MAX - pos;
     }
 
-    private Position get2DBoardPosition(int pos) {
+    private Position get2DBoardPosition(final int pos) {
         return new Position(pos / MAX_ROWS, pos % MAX_COLS);
     }
 
-    public List<Position> getPawnPositions(PlayerType playerType) {
+    public List<Position> getPawnPositions(final PlayerType playerType) {
         List<Position> result = new ArrayList<>(MAX_PAWNS);
         int pawnPosition = playerType == PlayerType.P1 ? p1Pawns : p2Pawns;
         int pawnsFound = 0;

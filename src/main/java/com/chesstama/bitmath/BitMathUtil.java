@@ -1,14 +1,13 @@
 package com.chesstama.bitmath;
 
-public final class BitMath {
+public final class BitMathUtil {
 
     private static final int INT_MAX_LOG_2 = 31;
 
-    private BitMath() {
-
+    private BitMathUtil() {
     }
 
-    public static int log2(int num) {
+    public static int log2(final int num) {
         if (num == 0) {
             throw new IllegalArgumentException("log 0 is undefined");
         }
