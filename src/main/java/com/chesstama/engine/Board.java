@@ -1,10 +1,12 @@
 package com.chesstama.engine;
 
 import com.chesstama.bitmath.BitMathUtil;
+import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("PMD")
 public class Board {
     /*
 (0-7) | (8-15) | (16-23) | (24-31)
@@ -41,9 +43,19 @@ Row  +----+----+----+----+----+
     // D8 | 00 | 00 | 00
     private final int p2Pawns;
 
+    // Cards
+    private final List<Card> p1Cards = ImmutableList.of(Card.MONKEY, Card.ELEPHANT);
+    private Card p1UpcomingCard = Card.TIGER;
+
+    private final List<Card> p2Cards = ImmutableList.of(Card.DRAGON, Card.MANTIS);
+    private final Card p2UpcomingCard = null;
+
     public Board() {
+        // P1 Pieces
         p1King = 0x00000200;
         p1Pawns = 0x00000D80;
+
+        // P2 Pieces
         p2King = 0x20000000;
         p2Pawns = 0xD8000000;
     }
