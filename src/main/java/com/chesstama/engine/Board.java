@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("PMD")
 public class Board {
     /*
 (0-7) | (8-15) | (16-23) | (24-31)
@@ -26,10 +25,11 @@ Row  +----+----+----+----+----+
                  P1
     */
 
-    private static final int BOARD_INDEX_MAX = 31;
-    private static final int MAX_ROWS = 5;
-    private static final int MAX_COLS = 5;
     private static final int MAX_PAWNS = 4;
+
+    public static final int BOARD_INDEX_MAX = 31;
+    public static final int MAX_ROWS = 5;
+    public static final int MAX_COLS = 5;
 
     // 00 | 00 | 02 | 00
     private final int p1King;
@@ -48,7 +48,7 @@ Row  +----+----+----+----+----+
     private Card p1UpcomingCard = Card.TIGER;
 
     private final List<Card> p2Cards = ImmutableList.of(Card.DRAGON, Card.MANTIS);
-    private final Card p2UpcomingCard = null;
+    private final Card p2UpcomingCard = Card.EMPTY;
 
     public Board() {
         // P1 Pieces
@@ -105,5 +105,13 @@ Row  +----+----+----+----+----+
             ", p2King=" + p2King +
             ", p2Pawns=" + p2Pawns +
             '}';
+    }
+
+    public List<Card> getCards(final PlayerType playerType) {
+        return playerType == PlayerType.P1 ? p1Cards : p2Cards;
+    }
+
+    public Card getUpcomingCard(final PlayerType playerType) {
+        return playerType == PlayerType.P1 ? p1UpcomingCard: p2UpcomingCard;
     }
 }

@@ -19,7 +19,7 @@ public enum Card {
          .  X  .  X  .
          .  .  .  .  .
      */
-    MONKEY(0),
+    MONKEY(0x280A000),
 
     /*
                ↑
@@ -29,7 +29,7 @@ public enum Card {
          .  .  .  .  .
          .  .  .  .  .
      */
-    ELEPHANT(0),
+    ELEPHANT(0x2940000),
 
     /*
                ↑
@@ -39,7 +39,7 @@ public enum Card {
          .  .  X  .  .
          .  .  .  .  .
     */
-    MANTIS(0),
+    MANTIS(0x2804000),
 
 
     /*
@@ -50,7 +50,7 @@ public enum Card {
          .  X  .  X  .
          .  .  .  .  .
      */
-    DRAGON(0),
+    DRAGON(0x440A000),
 
     /*
                ↑
@@ -60,8 +60,8 @@ public enum Card {
          .  .  X  .  .
          .  .  .  .  .
      */
-    TIGER(0),
-    UNKNOWN(Integer.MAX_VALUE);
+    TIGER(0x20004000),
+    EMPTY(0x00000000);
 
     private final int value;
 
@@ -77,7 +77,31 @@ public enum Card {
     }
 
     public static Card getCardFromValue(final int value) {
-        return CARD_MAP.getOrDefault(value, UNKNOWN);
+        return CARD_MAP.getOrDefault(value, EMPTY);
+    }
+
+    @SuppressWarnings("PMD.SystemPrintln")
+    public void printCard() {
+        System.out.println("Card = " + this);
+        System.out.println("==============================");
+        int maxEntries = Board.MAX_ROWS * Board.MAX_COLS;
+        int bitMask = 0x80000000;
+
+        int cardValue = getValue();
+        int index = 0;
+        while (index < maxEntries) {
+            if ((cardValue & bitMask) == bitMask) {
+                System.out.print("1 ");
+            } else {
+                System.out.print("0 ");
+            }
+            cardValue <<= 1;
+            index++;
+            if (index % Board.MAX_COLS == 0) {
+                System.out.println();
+            }
+        }
+        System.out.println("==============================");
     }
 
 }
