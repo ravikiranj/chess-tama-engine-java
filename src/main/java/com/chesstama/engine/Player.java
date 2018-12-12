@@ -1,6 +1,6 @@
 package com.chesstama.engine;
 
-public enum PlayerType {
+public enum Player {
     P1,
-    P2;
+    P2
 }

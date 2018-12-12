@@ -2,10 +2,12 @@ package com.chesstama.engine;
 
 import com.chesstama.bitmath.BitMathUtil;
 import com.google.common.collect.ImmutableList;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class Board {
     /*
 (0-7) | (8-15) | (16-23) | (24-31)
@@ -60,8 +62,21 @@ Row  +----+----+----+----+----+
         p2Pawns = 0xD8000000;
     }
 
-    public Position getKingPosition(final PlayerType playerType) {
-        int kingPosition = playerType == PlayerType.P1 ? p1King : p2King;
+    public Board(final int p1King,
+                 final int p1Pawns,
+                 final int p2King,
+                 final int p2Pawns) {
+        // P1 Pieces
+        this.p1King = p1King;
+        this.p1Pawns = p1Pawns;
+
+        // P2 Pieces
+        this.p2King = p2King;
+        this.p2Pawns = p2Pawns;
+    }
+
+    public Position getKingPosition(final Player player) {
+        int kingPosition = player == Player.P1 ? p1King : p2King;
         int oneDimensionBoardPos = get1DBoardPosition(kingPosition);
         return get2DBoardPosition(oneDimensionBoardPos);
     }
@@ -76,12 +91,12 @@ Row  +----+----+----+----+----+
         return new Position(pos / MAX_ROWS, pos % MAX_COLS);
     }
 
-    public List<Position> getPawnPositions(final PlayerType playerType) {
+    public List<Position> getPawnPositions(final Player player) {
         List<Position> result = new ArrayList<>(MAX_PAWNS);
-        int pawnPosition = playerType == PlayerType.P1 ? p1Pawns : p2Pawns;
+        int pawnPosition = player == Player.P1 ? p1Pawns : p2Pawns;
         int pawnsFound = 0;
 
-        while (pawnPosition > 0 && pawnsFound < MAX_PAWNS) {
+        while (pawnPosition != 0 && pawnsFound < MAX_PAWNS) {
             // Extract rightmost set bit
             int pos = get1DBoardPosition(pawnPosition);
 
@@ -99,19 +114,40 @@ Row  +----+----+----+----+----+
 
     @Override
     public String toString() {
-        return "Board{" +
-            "p1King=" + p1King +
-            ", p1Pawns=" + p1Pawns +
-            ", p2King=" + p2King +
-            ", p2Pawns=" + p2Pawns +
-            '}';
+        StringBuilder result = new StringBuilder("Board {");
+        result.append(String.format(" p1King = %d (0x%08X)", p1King, p1King));
+        result.append(String.format(", p1Pawns = %d (0x%08X)", p1Pawns, p1Pawns));
+        result.append(String.format(", p2King = %d (0x%08X)", p2King, p2King));
+        result.append(String.format(", p2Pawns = %d (0x%08X)", p2Pawns, p2Pawns));
+        result.append(" }");
+
+        return result.toString();
     }
 
-    public List<Card> getCards(final PlayerType playerType) {
-        return playerType == PlayerType.P1 ? p1Cards : p2Cards;
+    public List<Card> getCards(final Player player) {
+        return player == Player.P1 ? p1Cards : p2Cards;
     }
 
-    public Card getUpcomingCard(final PlayerType playerType) {
-        return playerType == PlayerType.P1 ? p1UpcomingCard: p2UpcomingCard;
+    public Card getUpcomingCard(final Player player) {
+        return player == Player.P1 ? p1UpcomingCard: p2UpcomingCard;
+    }
+
+    @SuppressWarnings({"PMD.SystemPrintln"})
+    public void printBoardState() {
+        for (Player player : Player.values()) {
+            System.out.println("Player = " + player);
+            System.out.println("==============================");
+            log.info("King Position = {}", this.getKingPosition(player));
+            log.info("Pawn Positions = {}", this.getPawnPositions(player));
+            log.info("Main Cards");
+            System.out.println("==============================");
+            for (Card card : this.getCards(player)) {
+                card.printCard();
+            }
+            log.info("Upcoming Card");
+            this.getUpcomingCard(player).printCard();
+            System.out.println("==============================");
+        }
+
     }
 }
