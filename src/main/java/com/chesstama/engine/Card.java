@@ -1,6 +1,10 @@
 package com.chesstama.engine;
 
+import com.chesstama.util.BoardUtil;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -65,6 +69,9 @@ public enum Card {
 
     private final int value;
 
+    private static final int CARD_CENTER_ROW = 2;
+    private static final int CARD_CENTER_COL = 2;
+
     private static final Map<Integer, Card> CARD_MAP = Arrays.stream(Card.values())
         .collect(Collectors.toMap(Card::getValue, Function.identity()));
 
@@ -74,6 +81,38 @@ public enum Card {
 
     public int getValue() {
         return value;
+    }
+
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+    public List<Position> getRelativeMoves(final Player player) {
+        List<Position> result = new ArrayList<>();
+        int cardPosition = value;
+
+        while (cardPosition != 0) {
+            // Extract rightmost set bit
+            int pos = BoardUtil.get1DBoardPosition(cardPosition);
+
+            // Add position to result
+            Position validMove = BoardUtil.get2DBoardPosition(pos);
+            Position tempMove = new Position(validMove.getRow() - CARD_CENTER_ROW, validMove.getCol() - CARD_CENTER_COL);
+            Position relativeMove = player == Player.P1 ? tempMove : tempMove.negate();
+
+            result.add(relativeMove);
+
+            // Unset bit at pos
+            cardPosition = cardPosition & ~(1 << (Board.BOARD_INDEX_MAX - pos));
+        }
+
+        return result;
+
+    }
+
+    public List<Position> getAbsoluteMoves() {
+        List<Position> relativeMoves = getRelativeMoves(Player.P1);
+
+        return relativeMoves.stream()
+                            .map(pos -> new Position(CARD_CENTER_ROW + pos.getRow(), CARD_CENTER_COL + pos.getCol()))
+                            .collect(Collectors.toList());
     }
 
     public static Card getCardFromValue(final int value) {

@@ -1,6 +1,6 @@
 package com.chesstama.engine;
 
-import com.chesstama.bitmath.BitMathUtil;
+import com.chesstama.util.BoardUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
@@ -87,18 +87,8 @@ Row  +----+----+----+----+----+
 
     public Position getKingPosition(final Player player) {
         int kingPosition = player == Player.P1 ? p1King : p2King;
-        int oneDimensionBoardPos = get1DBoardPosition(kingPosition);
-        return get2DBoardPosition(oneDimensionBoardPos);
-    }
-
-    private int get1DBoardPosition(final int piecePosition) {
-        // Find the rightmost set bit using (N & ~(N-1))
-        int pos = BitMathUtil.log2(piecePosition & ~(piecePosition - 1));
-        return BOARD_INDEX_MAX - pos;
-    }
-
-    private Position get2DBoardPosition(final int pos) {
-        return new Position(pos / MAX_ROWS, pos % MAX_COLS);
+        int oneDimensionBoardPos = BoardUtil.get1DBoardPosition(kingPosition);
+        return BoardUtil.get2DBoardPosition(oneDimensionBoardPos);
     }
 
     public List<Position> getPawnPositions(final Player player) {
@@ -108,10 +98,10 @@ Row  +----+----+----+----+----+
 
         while (pawnPosition != 0 && pawnsFound < MAX_PAWNS) {
             // Extract rightmost set bit
-            int pos = get1DBoardPosition(pawnPosition);
+            int pos = BoardUtil.get1DBoardPosition(pawnPosition);
 
             // Add position to result
-            result.add(get2DBoardPosition(pos));
+            result.add(BoardUtil.get2DBoardPosition(pos));
 
             // Unset bit at pos
             pawnPosition = pawnPosition & ~(1 << (BOARD_INDEX_MAX - pos));
@@ -140,6 +130,10 @@ Row  +----+----+----+----+----+
 
     public Card getUpcomingCard(final Player player) {
         return player == Player.P1 ? p1UpcomingCard: p2UpcomingCard;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
     }
 
     public void printBoardState() {

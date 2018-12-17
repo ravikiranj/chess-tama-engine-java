@@ -10,5 +10,6 @@ public class App {
                                .build();
         log.info("Board = {}", board);
         board.printBoardState();
+
     }
 }
