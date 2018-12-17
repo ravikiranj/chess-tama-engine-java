@@ -9,7 +9,10 @@
         Chess-Tama PMD Ruleset
     </description>
 
-    <rule ref="category/java/bestpractices.xml" />
+    <rule ref="category/java/bestpractices.xml" >
+        <exclude name="SystemPrintln"/>
+        <exclude name="UseVarargs"/>
+    </rule>
     <rule ref="category/java/codestyle.xml" >
         <exclude name="ConfusingTernary" />
         <exclude name="LocalVariableCouldBeFinal" />

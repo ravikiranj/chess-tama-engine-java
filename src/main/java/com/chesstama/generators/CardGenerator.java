@@ -1,4 +1,4 @@
-package com.chesstama;
+package com.chesstama.generators;
 
 import com.chesstama.engine.Board;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,6 @@ public class CardGenerator {
         log.info("Value in Dec = {}, Hex = 0x{}", value, hexValue);
     }
 
-    @SuppressWarnings({"PMD.UseVarargs", "PMD.SystemPrintln"})
     private static void printCard(final int[][] board) {
         System.out.println("Card");
         System.out.println("==============================");
@@ -48,7 +47,6 @@ public class CardGenerator {
         System.out.println("==============================");
     }
 
-    @SuppressWarnings("PMD.UseVarargs")
     private static int getCardValue(final int[][] board) {
         int value = 0;
 

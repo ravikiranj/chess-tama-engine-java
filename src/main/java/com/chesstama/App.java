@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class App {
-    @SuppressWarnings("PMD.SystemPrintln")
     public static void main(final String[] args) {
-        Board board = new Board();
+        Board board = new Board.Builder()
+                               .build();
         log.info("Board = {}", board);
         board.printBoardState();
     }

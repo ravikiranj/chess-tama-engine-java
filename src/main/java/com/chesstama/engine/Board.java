@@ -1,6 +1,7 @@
 package com.chesstama.engine;
 
 import com.chesstama.bitmath.BitMathUtil;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +29,7 @@ Row  +----+----+----+----+----+
     */
 
     private static final int MAX_PAWNS = 4;
+    private static final int MAX_CARDS = 2;
 
     public static final int BOARD_INDEX_MAX = 31;
     public static final int MAX_ROWS = 5;
@@ -46,33 +48,37 @@ Row  +----+----+----+----+----+
     private final int p2Pawns;
 
     // Cards
-    private final List<Card> p1Cards = ImmutableList.of(Card.MONKEY, Card.ELEPHANT);
-    private Card p1UpcomingCard = Card.TIGER;
+    private final List<Card> p1Cards;
+    private Card p1UpcomingCard;
 
-    private final List<Card> p2Cards = ImmutableList.of(Card.DRAGON, Card.MANTIS);
-    private final Card p2UpcomingCard = Card.EMPTY;
+    private final List<Card> p2Cards;
+    private final Card p2UpcomingCard;
 
-    public Board() {
-        // P1 Pieces
-        p1King = 0x00000200;
-        p1Pawns = 0x00000D80;
+    private Board(final Builder builder) {
+        this.p1King = builder.p1King;
+        this.p1Pawns = builder.p1Pawns;
 
-        // P2 Pieces
-        p2King = 0x20000000;
-        p2Pawns = 0xD8000000;
+        this.p2King = builder.p2King;
+        this.p2Pawns = builder.p2Pawns;
+
+        this.p1Cards = builder.p1Cards;
+        this.p1UpcomingCard = builder.p1UpcomingCard;
+
+        this.p2Cards = builder.p2Cards;
+        this.p2UpcomingCard = builder.p2UpcomingCard;
+
+        assertValidCardState();
+
     }
 
-    public Board(final int p1King,
-                 final int p1Pawns,
-                 final int p2King,
-                 final int p2Pawns) {
-        // P1 Pieces
-        this.p1King = p1King;
-        this.p1Pawns = p1Pawns;
+    private void assertValidCardState() {
+        Preconditions.checkNotNull(p1Cards);
+        Preconditions.checkArgument(p1Cards.size() == MAX_CARDS);
+        Preconditions.checkNotNull(p1UpcomingCard);
 
-        // P2 Pieces
-        this.p2King = p2King;
-        this.p2Pawns = p2Pawns;
+        Preconditions.checkNotNull(p2Cards);
+        Preconditions.checkArgument(p2Cards.size() == MAX_CARDS);
+        Preconditions.checkNotNull(p2UpcomingCard);
     }
 
     public Position getKingPosition(final Player player) {
@@ -132,7 +138,6 @@ Row  +----+----+----+----+----+
         return player == Player.P1 ? p1UpcomingCard: p2UpcomingCard;
     }
 
-    @SuppressWarnings({"PMD.SystemPrintln"})
     public void printBoardState() {
         for (Player player : Player.values()) {
             System.out.println("Player = " + player);
@@ -149,5 +154,70 @@ Row  +----+----+----+----+----+
             System.out.println("==============================");
         }
 
+    }
+
+    public static final class Builder {
+        // 00 | 00 | 02 | 00
+        private int p1King = 0x00000200;
+
+        // 00 | 00 | 0D | 80
+        private int p1Pawns = 0x00000D80;
+
+        // 20 | 00 | 00 | 00
+        private int p2King = 0x20000000;
+
+        // D8 | 00 | 00 | 00
+        private int p2Pawns = 0xD8000000;
+
+        // Default Cards
+        private List<Card> p1Cards = ImmutableList.of(Card.MONKEY, Card.ELEPHANT);
+        private Card p1UpcomingCard = Card.TIGER;
+
+        private List<Card> p2Cards = ImmutableList.of(Card.DRAGON, Card.MANTIS);
+        private Card p2UpcomingCard = Card.EMPTY;
+
+        public Builder withP1King(final int p1King) {
+            this.p1King = p1King;
+            return this;
+        }
+
+        public Builder withP1Pawns(final int p1Pawns) {
+            this.p1Pawns = p1Pawns;
+            return this;
+        }
+
+        public Builder withP2King(final int p2King) {
+            this.p2King = p2King;
+            return this;
+        }
+
+        public Builder withP2Pawns(final int p2Pawns) {
+            this.p2Pawns = p2Pawns;
+            return this;
+        }
+
+        public Builder withP1Cards(final List<Card> p1Cards) {
+            this.p1Cards = p1Cards;
+            return this;
+        }
+
+        public Builder withP1UpcomingCard(final Card p1UpcomingCard) {
+            this.p1UpcomingCard = p1UpcomingCard;
+            return this;
+        }
+
+        public Builder withP2Cards(final List<Card> p2Cards) {
+            this.p2Cards = p2Cards;
+            return this;
+        }
+
+        public Builder withP2UpcomingCard(final Card p2UpcomingCard) {
+            this.p2UpcomingCard = p2UpcomingCard;
+            return this;
+        }
+
+        public Board build() {
+            return new Board(this);
+        }
     }
 }

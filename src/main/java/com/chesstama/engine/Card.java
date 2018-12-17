@@ -80,7 +80,6 @@ public enum Card {
         return CARD_MAP.getOrDefault(value, EMPTY);
     }
 
-    @SuppressWarnings("PMD.SystemPrintln")
     public void printCard() {
         System.out.println("Card = " + this);
         System.out.println("==============================");

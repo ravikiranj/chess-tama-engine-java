@@ -1,4 +1,4 @@
-package com.chesstama;
+package com.chesstama.generators;
 
 import com.chesstama.engine.Board;
 import com.google.common.collect.ImmutableSet;
@@ -80,10 +80,14 @@ public class BoardGenerator {
         p2King <<= times;
         p2Pawns <<= times;
 
-        return new Board(p1King, p1Pawns, p2King, p2Pawns);
+        return new Board.Builder()
+                        .withP1King(p1King)
+                        .withP1Pawns(p1Pawns)
+                        .withP2King(p2King)
+                        .withP2Pawns(p2Pawns)
+                        .build();
     }
 
-    @SuppressWarnings({"PMD.UseVarargs", "PMD.SystemPrintln"})
     private static void printBoard(final String[][] board) {
         System.out.println("Board");
         System.out.println("==============================");
