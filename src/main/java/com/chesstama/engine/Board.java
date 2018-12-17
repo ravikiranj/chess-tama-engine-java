@@ -36,23 +36,25 @@ Row  +----+----+----+----+----+
     public static final int MAX_COLS = 5;
 
     // 00 | 00 | 02 | 00
-    private final int p1King;
+    private int p1King;
 
     // 00 | 00 | 0D | 80
-    private final int p1Pawns;
+    private int p1Pawns;
 
     // 20 | 00 | 00 | 00
-    private final int p2King;
+    private int p2King;
 
     // D8 | 00 | 00 | 00
-    private final int p2Pawns;
+    private int p2Pawns;
 
     // Cards
     private final List<Card> p1Cards;
     private Card p1UpcomingCard;
 
     private final List<Card> p2Cards;
-    private final Card p2UpcomingCard;
+    private Card p2UpcomingCard;
+
+    private Player currentPlayer;
 
     private Board(final Builder builder) {
         this.p1King = builder.p1King;
@@ -66,6 +68,8 @@ Row  +----+----+----+----+----+
 
         this.p2Cards = builder.p2Cards;
         this.p2UpcomingCard = builder.p2UpcomingCard;
+
+        this.currentPlayer = builder.currentPlayer;
 
         assertValidCardState();
 
@@ -139,6 +143,7 @@ Row  +----+----+----+----+----+
     }
 
     public void printBoardState() {
+        System.out.println("Current Player = " + currentPlayer);
         for (Player player : Player.values()) {
             System.out.println("Player = " + player);
             System.out.println("==============================");
@@ -175,6 +180,8 @@ Row  +----+----+----+----+----+
 
         private List<Card> p2Cards = ImmutableList.of(Card.DRAGON, Card.MANTIS);
         private Card p2UpcomingCard = Card.EMPTY;
+
+        private Player currentPlayer = Player.P1;
 
         public Builder withP1King(final int p1King) {
             this.p1King = p1King;
@@ -213,6 +220,11 @@ Row  +----+----+----+----+----+
 
         public Builder withP2UpcomingCard(final Card p2UpcomingCard) {
             this.p2UpcomingCard = p2UpcomingCard;
+            return this;
+        }
+
+        public Builder withCurrentPlayer(final Player currentPlayer) {
+            this.currentPlayer = currentPlayer;
             return this;
         }
 
