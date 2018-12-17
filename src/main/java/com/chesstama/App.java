@@ -1,6 +1,7 @@
 package com.chesstama;
 
 import com.chesstama.engine.Board;
+import com.chesstama.engine.Evaluator;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -10,6 +11,12 @@ public class App {
                                .build();
         log.info("Board = {}", board);
         board.printBoardState();
+
+        log.info(
+                "Current Player = {}, Board Value = {}",
+                board.getCurrentPlayer(),
+                Evaluator.getBoardValue(board)
+        );
 
     }
 }

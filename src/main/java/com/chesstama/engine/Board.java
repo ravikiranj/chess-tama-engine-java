@@ -35,6 +35,12 @@ Row  +----+----+----+----+----+
     public static final int MAX_ROWS = 5;
     public static final int MAX_COLS = 5;
 
+    public static final int MIN_ROW_INDEX = 0;
+    public static final int MAX_ROW_INDEX = 4;
+
+    public static final int MIN_COL_INDEX = 0;
+    public static final int MAX_COL_INDEX = 4;
+
     // 00 | 00 | 02 | 00
     private int p1King;
 

@@ -23,6 +23,15 @@ public class Position {
         return new Position(-1 * row, -1 * col);
     }
 
+    public Position add(final Position position) {
+        return new Position(row + position.getRow(), col + position.getCol());
+    }
+
+    public boolean isValid() {
+        return row >= Board.MIN_ROW_INDEX && row <= Board.MAX_ROW_INDEX
+                && col >= Board.MIN_COL_INDEX && col <= Board.MAX_COL_INDEX;
+    }
+
     @Override
     public String toString() {
         return "Position{" +
