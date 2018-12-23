@@ -1,5 +1,9 @@
-package com.chesstama.engine;
+package com.chesstama.eval;
 
+import com.chesstama.engine.Board;
+import com.chesstama.engine.Card;
+import com.chesstama.engine.Player;
+import com.chesstama.engine.Position;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,36 +16,29 @@ import java.util.stream.Collectors;
 @SuppressWarnings({"Duplicates"})
 @Slf4j
 public final class Evaluator {
-    private static final int BASE_SCORE = 10;
-
-    private static final int OPP_KING_CAPTURE = BASE_SCORE * 1000;
-    private static final int OPP_KING_HOME_MOVE = BASE_SCORE * 1000;
-
-    private static final int OPP_PAWN_CAPTURE = BASE_SCORE * 100;
-
-    private static final int UNIQUE_MOVE = BASE_SCORE * 25;
-
     private static final Position P1_KING_SLOT = new Position(4, 2);
     private static final Position P2_KING_SLOT = new Position(0, 2);
 
     private Evaluator() {
     }
 
-    public static long getBoardValue(final Board board) {
-        long value = 0L;
+    public static Score getBoardValue(final Board board) {
+        Score totalScore = new Score();
         List<Position> validMoves = getValidMoves(board);
 
-        value += getKingScore(board, validMoves);
-        value += getPawnsScore(board, validMoves);
-        value += getMobilityScore(board, validMoves);
+        computeKingScore(board, validMoves, totalScore);
+        computePawnScore(board, validMoves, totalScore);
+        computeMobilityScore(board, validMoves, totalScore);
 
-        return value;
+        return totalScore;
     }
 
     /**
-     * @return score reflecting unique reachable positions on the board
+     * compute score reflecting unique reachable positions on the board
      */
-    private static long getMobilityScore(final Board board, final List<Position> validMoves) {
+    private static void computeMobilityScore(final Board board,
+                                             final List<Position> validMoves,
+                                             final Score score) {
         Player currentPlayer = board.getCurrentPlayer();
 
         List<Position> piecePositions = new ImmutableList.Builder<Position>()
@@ -60,12 +57,7 @@ public final class Evaluator {
             }
         }
 
-        long score = uniqueValidMoves.size() * UNIQUE_MOVE;
-
-        log.info("Unique Valid Moves = {}, Count = {}, Score = {}",
-            uniqueValidMoves, uniqueValidMoves.size(), score);
-
-        return score;
+        score.add(EvalRule.UNIQUE_MOVE, uniqueValidMoves.size());
     }
 
     /**
@@ -73,11 +65,11 @@ public final class Evaluator {
      * 2) Opponent King Home Move
      * 3) Opponent Pawn Capture
      *
-     * @return king's score reflecting above criteria
+     * compute king's score reflecting above criteria
      */
-    private static long getKingScore(final Board board,
-                                     final List<Position> validMoves) {
-        long score = 0L;
+    private static void computeKingScore(final Board board,
+                                         final List<Position> validMoves,
+                                         final Score score) {
         Player currentPlayer = board.getCurrentPlayer();
         Player opponent = currentPlayer.getOpponent();
 
@@ -94,30 +86,28 @@ public final class Evaluator {
             }
 
             if (potentialMovePos.equals(opponentKingPos)) {
-                score += OPP_KING_CAPTURE;
+                score.add(EvalRule.OPP_KING_CAPTURE);
             }
 
             if (potentialMovePos.equals(opponentKingHome)) {
-                score += OPP_KING_HOME_MOVE;
+                score.add(EvalRule.OPP_KING_HOME);
             }
 
             if (pawnPositions.contains(potentialMovePos)) {
-                score += OPP_PAWN_CAPTURE;
+                score.add(EvalRule.OPP_PAWN_CAPTURE);
             }
         }
-
-        return score;
     }
 
     /**
      * 1) Opponent King Capture
      * 2) Opponent Pawn Capture
      *
-     * @return pawns' score reflecting above criteria
+     * compute pawns' score reflecting above criteria
      */
-    private static long getPawnsScore(final Board board,
-                                      final List<Position> validMoves) {
-        long score = 0L;
+    private static void computePawnScore(final Board board,
+                                         final List<Position> validMoves,
+                                         final Score score) {
         Player currentPlayer = board.getCurrentPlayer();
         Player opponent = currentPlayer.getOpponent();
 
@@ -134,16 +124,14 @@ public final class Evaluator {
                 }
 
                 if (potentialMovePos.equals(opponentKingPos)) {
-                    score += OPP_KING_CAPTURE;
+                    score.add(EvalRule.OPP_KING_CAPTURE);
                 }
 
                 if (opponentPawnPositions.contains(potentialMovePos)) {
-                    score += OPP_PAWN_CAPTURE;
+                    score.add(EvalRule.OPP_PAWN_CAPTURE);
                 }
             }
         }
-
-        return score;
     }
 
     private static List<Position> getValidMoves(final Board board) {

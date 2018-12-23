@@ -1,7 +1,7 @@
 package com.chesstama;
 
 import com.chesstama.engine.Board;
-import com.chesstama.engine.Evaluator;
+import com.chesstama.eval.Evaluator;
 import com.chesstama.engine.Player;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,7 +11,7 @@ public class App {
         Board board = new Board.Builder()
                                .withCurrentPlayer(Player.P1)
                                .build();
-        log.info("Board = {}", board);
+        //log.info("Board = {}", board);
         board.printBoardState();
 
         log.info(
