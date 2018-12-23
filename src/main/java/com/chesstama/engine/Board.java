@@ -158,6 +158,33 @@ Row  +----+----+----+----+----+
             this.getUpcomingCard(player).printCard();
             System.out.println("==============================");
         }
+    }
+
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+    public void printBoardOnly() {
+        Position p1King = getKingPosition(Player.P1);
+        List<Position> p1Pawns = getPawnPositions(Player.P1);
+
+        Position p2King = getKingPosition(Player.P2);
+        List<Position> p2Pawns = getPawnPositions(Player.P2);
+
+        for (int row = 0; row < Board.MAX_ROWS; row++) {
+            for (int col = 0; col < Board.MAX_COLS; col++) {
+                Position p = new Position(row, col);
+                if (p.equals(p1King)) {
+                    System.out.print("K1  ");
+                } else if (p.equals(p2King)) {
+                    System.out.print("K2  ");
+                } else if (p1Pawns.contains(p)) {
+                    System.out.print("P1  ");
+                } else if (p2Pawns.contains(p)) {
+                    System.out.print("P2  ");
+                } else {
+                    System.out.print("..  ");
+                }
+            }
+            System.out.println();
+        }
 
     }
 

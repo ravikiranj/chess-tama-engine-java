@@ -12,7 +12,7 @@ public class App {
                                .withCurrentPlayer(Player.P1)
                                .build();
         //log.info("Board = {}", board);
-        board.printBoardState();
+        board.printBoardOnly();
 
         log.info(
                 "Current Player = {}, Board Value = {}",
