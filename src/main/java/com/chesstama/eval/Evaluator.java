@@ -24,20 +24,94 @@ public final class Evaluator {
 
     public static Score getBoardValue(final Board board) {
         Score totalScore = new Score();
-        List<Position> validMoves = getValidMoves(board);
+        Set<Position> validMoves = getValidMoves(board);
+        Set<Position> validOpponentMoves = getValidMovesForOpponent(board);
 
         computeKingScore(board, validMoves, totalScore);
         computePawnScore(board, validMoves, totalScore);
         computeMobilityScore(board, validMoves, totalScore);
 
+        computeOpponentKingScore(board, validOpponentMoves, totalScore);
+        computeOpponentPawnScore(board, validOpponentMoves, totalScore);
+
         return totalScore;
+    }
+
+    /**
+     * compute opponent king threat score
+     */
+    private static void computeOpponentKingScore(final Board board,
+                                                 final Set<Position> validOpponentMoves,
+                                                 final Score score) {
+        Player currentPlayer = board.getCurrentPlayer();
+        Player opponent = currentPlayer.getOpponent();
+
+        Position kingPos = board.getKingPosition(currentPlayer);
+        Position kingHome = currentPlayer == Player.P1 ? P1_KING_SLOT : P2_KING_SLOT;
+        List<Position> pawnPositions = board.getPawnPositions(currentPlayer);
+
+        Position opponentKingPos = board.getKingPosition(opponent);
+
+        // Opponent King
+        for (Position validMove : validOpponentMoves) {
+            Position potentialMovePos = opponentKingPos.add(validMove);
+            if (!potentialMovePos.isValid()) {
+                continue;
+            }
+
+            if (potentialMovePos.equals(kingPos)) {
+                score.add(EvalRule.KING_CAPTURE);
+            }
+
+            if (potentialMovePos.equals(kingHome)) {
+                score.add(EvalRule.KING_HOME);
+            }
+
+            if (pawnPositions.contains(potentialMovePos)) {
+                score.add(EvalRule.PAWN_CAPTURE);
+            }
+        }
+    }
+
+    /**
+     * compute opponent pawn threat score
+     */
+    private static void computeOpponentPawnScore(final Board board,
+                                                 final Set<Position> validOpponentMoves,
+                                                 final Score score) {
+        Player currentPlayer = board.getCurrentPlayer();
+        Player opponent = currentPlayer.getOpponent();
+
+        Position kingPos = board.getKingPosition(currentPlayer);
+        List<Position> pawnPositions = board.getPawnPositions(currentPlayer);
+
+        List<Position> opponentPawnPositions = board.getPawnPositions(opponent);
+
+        // Opponent Pawns
+        for (Position opponentPawnPosition : opponentPawnPositions) {
+            for (Position validMove : validOpponentMoves) {
+                Position potentialMovePos = opponentPawnPosition.add(validMove);
+
+                if (!potentialMovePos.isValid()) {
+                    continue;
+                }
+
+                if (potentialMovePos.equals(kingPos)) {
+                    score.add(EvalRule.KING_CAPTURE);
+                }
+
+                if (pawnPositions.contains(potentialMovePos)) {
+                    score.add(EvalRule.PAWN_CAPTURE);
+                }
+            }
+        }
     }
 
     /**
      * compute score reflecting unique reachable positions on the board
      */
     private static void computeMobilityScore(final Board board,
-                                             final List<Position> validMoves,
+                                             final Set<Position> validMoves,
                                              final Score score) {
         Player currentPlayer = board.getCurrentPlayer();
 
@@ -68,7 +142,7 @@ public final class Evaluator {
      * compute king's score reflecting above criteria
      */
     private static void computeKingScore(final Board board,
-                                         final List<Position> validMoves,
+                                         final Set<Position> validMoves,
                                          final Score score) {
         Player currentPlayer = board.getCurrentPlayer();
         Player opponent = currentPlayer.getOpponent();
@@ -106,7 +180,7 @@ public final class Evaluator {
      * compute pawns' score reflecting above criteria
      */
     private static void computePawnScore(final Board board,
-                                         final List<Position> validMoves,
+                                         final Set<Position> validMoves,
                                          final Score score) {
         Player currentPlayer = board.getCurrentPlayer();
         Player opponent = currentPlayer.getOpponent();
@@ -134,13 +208,24 @@ public final class Evaluator {
         }
     }
 
-    private static List<Position> getValidMoves(final Board board) {
+    private static Set<Position> getValidMoves(final Board board) {
         Player currentPlayer = board.getCurrentPlayer();
         List<Card> cards = board.getCards(currentPlayer);
 
+        return getValidMovesForPlayer(currentPlayer, cards);
+    }
+
+    private static Set<Position> getValidMovesForOpponent(final Board board) {
+        Player opponent = board.getCurrentPlayer().getOpponent();
+        List<Card> cards = board.getCards(opponent);
+
+        return getValidMovesForPlayer(opponent, cards);
+    }
+
+    private static Set<Position> getValidMovesForPlayer(final Player player, final List<Card> cards) {
         return cards.stream()
-                    .map(card -> card.getRelativeMoves(currentPlayer))
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toList());
+                .map(card -> card.getRelativeMoves(player))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
     }
 }

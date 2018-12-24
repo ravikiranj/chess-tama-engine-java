@@ -104,7 +104,6 @@ public enum Card {
         }
 
         return result;
-
     }
 
     public List<Position> getAbsoluteMoves() {
