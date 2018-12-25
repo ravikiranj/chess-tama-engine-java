@@ -5,8 +5,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 public class Board {
@@ -97,8 +98,8 @@ Row  +----+----+----+----+----+
         return BoardUtil.get2DBoardPosition(oneDimensionBoardPos);
     }
 
-    public List<Position> getPawnPositions(final Player player) {
-        List<Position> result = new ArrayList<>(MAX_PAWNS);
+    public Set<Position> getPawnPositions(final Player player) {
+        Set<Position> result = new HashSet<>(MAX_PAWNS);
         int pawnPosition = player == Player.P1 ? p1Pawns : p2Pawns;
         int pawnsFound = 0;
 
@@ -163,10 +164,10 @@ Row  +----+----+----+----+----+
     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     public void printBoardOnly() {
         Position p1King = getKingPosition(Player.P1);
-        List<Position> p1Pawns = getPawnPositions(Player.P1);
+        Set<Position> p1Pawns = getPawnPositions(Player.P1);
 
         Position p2King = getKingPosition(Player.P2);
-        List<Position> p2Pawns = getPawnPositions(Player.P2);
+        Set<Position> p2Pawns = getPawnPositions(Player.P2);
 
         for (int row = 0; row < Board.MAX_ROWS; row++) {
             for (int col = 0; col < Board.MAX_COLS; col++) {

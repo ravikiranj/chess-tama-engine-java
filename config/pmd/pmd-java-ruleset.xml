@@ -20,6 +20,7 @@
         <exclude name="OnlyOneReturn" />
         <exclude name="ShortVariable" />
         <exclude name="ShortClassName" />
+        <exclude name="TooManyStaticImports"/>
     </rule>
     <rule ref="category/java/errorprone.xml">
         <exclude name="BeanMembersShouldSerialize"/>

@@ -1,9 +1,12 @@
 package com.chesstama.eval;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Score {
+    private static final ScoreMapComparator SCORE_MAP_COMPARATOR = new ScoreMapComparator();
+
     private final Map<EvalRule, Integer> scoreMap;
     private long totalScore;
 
@@ -33,21 +36,39 @@ public class Score {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Map.Entry<EvalRule, Integer> entry : scoreMap.entrySet()) {
-            EvalRule evalRule = entry.getKey();
-            Integer count = entry.getValue();
-            stringBuilder.append(
-                String.format(
-                    "\nRule = %s, Count = %d, Score = %d\n",
-                    evalRule,
-                    count,
-                    evalRule.getScore() * count
-                )
-            );
-        }
+        StringBuilder stringBuilder = new StringBuilder("\n");
+
+        scoreMap.entrySet()
+                .stream()
+                .sorted(SCORE_MAP_COMPARATOR.reversed())
+                .forEach(entry -> {
+                    EvalRule evalRule = entry.getKey();
+                    Integer count = entry.getValue();
+                    stringBuilder.append(
+                        String.format(
+                            "Rule = %s, Count = %d, Score = %d\n",
+                            evalRule,
+                            count,
+                            evalRule.getScore() * count
+                        )
+                    );
+                });
+
         stringBuilder.append(String.format("Total Score = %d\n", totalScore));
 
         return stringBuilder.toString();
+    }
+
+    private static class ScoreMapComparator implements Comparator<Map.Entry<EvalRule, Integer>> {
+
+        @Override
+        public int compare(final Map.Entry<EvalRule, Integer> o1, final Map.Entry<EvalRule, Integer> o2) {
+            long result = o1.getKey().getScore() * o1.getValue() - o2.getKey().getScore() * o2.getValue();
+            if (result == 0) {
+                return 0;
+            }
+
+            return result > 0L ? 1 : -1;
+        }
     }
 }

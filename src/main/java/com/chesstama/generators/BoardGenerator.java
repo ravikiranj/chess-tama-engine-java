@@ -8,41 +8,57 @@ import java.util.Set;
 
 @Slf4j
 public class BoardGenerator {
-    private static final String EMPT = ".";
-    private static final Set<String> VALID_TOKENS = ImmutableSet.of("K1", "P1", "K2", "P2", EMPT);
+    public static final String ET = ".";
+
+    public static final String K1 = "K1";
+    public static final String P1 = "P1";
+    public static final String K2 = "K2";
+    public static final String P2 = "P2";
+
+    private static final Set<String> VALID_TOKENS = ImmutableSet.of(K1, P1, K2, P2, ET);
+
+    private static final int MIN_KINGS = 1;
+    private static final int MAX_PAWNS = 4;
 
     public static void main(final String[] args) {
         final String[][] board = new String[][]{
             {
-                "P2", "P2", "K2", "P2", "P2"
+                    P2, ET, ET, ET, P2
             },
             {
-                EMPT, EMPT, EMPT, EMPT, EMPT
+                    ET, ET, K2, ET, ET
             },
             {
-                EMPT, EMPT, EMPT, EMPT, EMPT
+                    ET, P2, P1, P2, K1
             },
             {
-                EMPT, EMPT, EMPT, EMPT, EMPT
+                    ET, P1, ET, P1, ET
             },
             {
-                "P1", "P1", "K1", "P1", "P1"
+                    P1, ET, ET, ET, ET
             },
         };
 
-        printBoard(board);
-
         Board chessTamaBoard = getBoard(board);
         log.info("Board = {}", chessTamaBoard);
-        chessTamaBoard.printBoardState();
+        chessTamaBoard.printBoardOnly();
     }
 
     @SuppressWarnings({"PMD.UseVarargs"})
-    private static Board getBoard(final String[][] board) {
+    public static Board getBoard(final String[][] board) {
+        if (board.length != Board.MAX_ROWS || board[0].length != Board.MAX_COLS) {
+            throw new IllegalArgumentException("Board is not 5 x 5");
+        }
+
         int p1King = 0;
         int p1Pawns = 0;
         int p2King = 0;
         int p2Pawns = 0;
+
+        int p1KingCount = 0;
+        int p1PawnsCount = 0;
+        int p2KingCount = 0;
+        int p2PawnsCount = 0;
 
         for (int row = 0; row < Board.MAX_ROWS; row++) {
             for (int col = 0; col < Board.MAX_COLS; col++) {
@@ -53,15 +69,19 @@ public class BoardGenerator {
                 switch (value) {
                     case "K1":
                         p1King |= 1;
+                        p1KingCount++;
                         break;
                     case "P1":
                         p1Pawns |= 1;
+                        p1PawnsCount++;
                         break;
                     case "K2":
                         p2King |= 1;
+                        p2KingCount++;
                         break;
                     case "P2":
                         p2Pawns |= 1;
+                        p2PawnsCount++;
                         break;
                     default:
                         break;
@@ -80,6 +100,8 @@ public class BoardGenerator {
         p2King <<= times;
         p2Pawns <<= times;
 
+        validate(p1KingCount, p1PawnsCount, p2KingCount, p2PawnsCount);
+
         return new Board.Builder()
                         .withP1King(p1King)
                         .withP1Pawns(p1Pawns)
@@ -88,22 +110,25 @@ public class BoardGenerator {
                         .build();
     }
 
-    private static void printBoard(final String[][] board) {
-        System.out.println("Board");
-        System.out.println("==============================");
-        for (int row = 0; row < Board.MAX_ROWS; row++) {
-            for (int col = 0; col < Board.MAX_COLS; col++) {
-                String value = board[row][col];
-                if (EMPT.equals(value)) {
-                    System.out.print(".." + " ");
-                } else {
-                    System.out.print(value + " ");
-                }
-            }
-            System.out.println();
+    private static void validate(final int p1KingCount,
+                                 final int p1PawnsCount,
+                                 final int p2KingCount,
+                                 final int p2PawnsCount) {
+        if (p1KingCount != MIN_KINGS) {
+            throw new IllegalArgumentException("K1 count has to be " + MIN_KINGS + ", p1KingCount =  " + p1KingCount);
         }
-        System.out.println("==============================");
-    }
 
+        if (p2KingCount != MIN_KINGS) {
+            throw new IllegalArgumentException("K2 count has to be " + MIN_KINGS + ", p1KingCount =  " + p1KingCount);
+        }
+
+        if (p1PawnsCount > MAX_PAWNS) {
+            throw new IllegalArgumentException("P1 Pawns > " + MAX_PAWNS + ", p1PawnsCount = " + p1PawnsCount);
+        }
+
+        if (p2PawnsCount > MAX_PAWNS) {
+            throw new IllegalArgumentException("P2 Pawns > " + MAX_PAWNS + ", p2PawnsCount = " + p2PawnsCount);
+        }
+    }
 
 }

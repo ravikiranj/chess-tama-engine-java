@@ -4,7 +4,7 @@ import com.chesstama.engine.Board;
 import com.chesstama.engine.Card;
 import com.chesstama.engine.Player;
 import com.chesstama.engine.Position;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 @SuppressWarnings({"Duplicates"})
 @Slf4j
 public final class Evaluator {
+    public static final int BASE_SCORE = 1;
+
     private static final Position P1_KING_SLOT = new Position(4, 2);
     private static final Position P2_KING_SLOT = new Position(0, 2);
 
@@ -38,6 +40,10 @@ public final class Evaluator {
     }
 
     /**
+     * 1) King capture
+     * 2) Reach King home
+     * 3) Pawn capture
+     *
      * compute opponent king threat score
      */
     private static void computeOpponentKingScore(final Board board,
@@ -48,14 +54,20 @@ public final class Evaluator {
 
         Position kingPos = board.getKingPosition(currentPlayer);
         Position kingHome = currentPlayer == Player.P1 ? P1_KING_SLOT : P2_KING_SLOT;
-        List<Position> pawnPositions = board.getPawnPositions(currentPlayer);
+        Set<Position> pawnPositions = board.getPawnPositions(currentPlayer);
 
         Position opponentKingPos = board.getKingPosition(opponent);
+        Set<Position> opponentPawnPositions = board.getPawnPositions(opponent);
+        Set<Position> opponentPiecePositions = new ImmutableSet.Builder<Position>()
+                .add(opponentKingPos)
+                .addAll(opponentPawnPositions)
+                .build();
 
         // Opponent King
         for (Position validMove : validOpponentMoves) {
             Position potentialMovePos = opponentKingPos.add(validMove);
-            if (!potentialMovePos.isValid()) {
+
+            if (!isValidPosition(potentialMovePos, opponentPiecePositions)) {
                 continue;
             }
 
@@ -74,6 +86,9 @@ public final class Evaluator {
     }
 
     /**
+     * 1) King capture
+     * 2) Pawn capture
+     *
      * compute opponent pawn threat score
      */
     private static void computeOpponentPawnScore(final Board board,
@@ -83,16 +98,21 @@ public final class Evaluator {
         Player opponent = currentPlayer.getOpponent();
 
         Position kingPos = board.getKingPosition(currentPlayer);
-        List<Position> pawnPositions = board.getPawnPositions(currentPlayer);
+        Set<Position> pawnPositions = board.getPawnPositions(currentPlayer);
 
-        List<Position> opponentPawnPositions = board.getPawnPositions(opponent);
+        Position opponentKingPos = board.getKingPosition(opponent);
+        Set<Position> opponentPawnPositions = board.getPawnPositions(opponent);
+        Set<Position> opponentPiecePositions = new ImmutableSet.Builder<Position>()
+                .add(opponentKingPos)
+                .addAll(opponentPawnPositions)
+                .build();
 
         // Opponent Pawns
         for (Position opponentPawnPosition : opponentPawnPositions) {
             for (Position validMove : validOpponentMoves) {
                 Position potentialMovePos = opponentPawnPosition.add(validMove);
 
-                if (!potentialMovePos.isValid()) {
+                if (!isValidPosition(potentialMovePos, opponentPiecePositions)) {
                     continue;
                 }
 
@@ -115,7 +135,7 @@ public final class Evaluator {
                                              final Score score) {
         Player currentPlayer = board.getCurrentPlayer();
 
-        List<Position> piecePositions = new ImmutableList.Builder<Position>()
+        Set<Position> piecePositions = new ImmutableSet.Builder<Position>()
             .add(board.getKingPosition(currentPlayer))
             .addAll(board.getPawnPositions(currentPlayer))
             .build();
@@ -125,11 +145,14 @@ public final class Evaluator {
         for (Position piecePosition : piecePositions) {
             for (Position validMove : validMoves) {
                 Position potentialMovePos = piecePosition.add(validMove);
-                if (potentialMovePos.isValid() && !uniqueValidMoves.contains(potentialMovePos)) {
+
+                if (isValidPosition(potentialMovePos, piecePositions)) {
                     uniqueValidMoves.add(potentialMovePos);
                 }
             }
         }
+
+        log.info("Unique Valid Moves = {}", uniqueValidMoves);
 
         score.add(EvalRule.UNIQUE_MOVE, uniqueValidMoves.size());
     }
@@ -148,14 +171,20 @@ public final class Evaluator {
         Player opponent = currentPlayer.getOpponent();
 
         Position kingPos = board.getKingPosition(currentPlayer);
+        Set<Position> pawnPositions = board.getPawnPositions(currentPlayer);
+        Set<Position> piecePositions = new ImmutableSet.Builder<Position>()
+                .add(kingPos)
+                .addAll(pawnPositions)
+                .build();
 
         Position opponentKingPos = board.getKingPosition(opponent);
         Position opponentKingHome = currentPlayer == Player.P1 ? P2_KING_SLOT : P1_KING_SLOT;
-        Set<Position> pawnPositions = new HashSet<>(board.getPawnPositions(opponent));
+        Set<Position> opponentPawnPositions = new HashSet<>(board.getPawnPositions(opponent));
 
         for (Position validMove : validMoves) {
             Position potentialMovePos = kingPos.add(validMove);
-            if (!potentialMovePos.isValid()) {
+
+            if (!isValidPosition(potentialMovePos, piecePositions)) {
                 continue;
             }
 
@@ -167,7 +196,7 @@ public final class Evaluator {
                 score.add(EvalRule.OPP_KING_HOME);
             }
 
-            if (pawnPositions.contains(potentialMovePos)) {
+            if (opponentPawnPositions.contains(potentialMovePos)) {
                 score.add(EvalRule.OPP_PAWN_CAPTURE);
             }
         }
@@ -185,7 +214,12 @@ public final class Evaluator {
         Player currentPlayer = board.getCurrentPlayer();
         Player opponent = currentPlayer.getOpponent();
 
-        List<Position> pawnPositions = board.getPawnPositions(currentPlayer);
+        Position kingPos = board.getKingPosition(currentPlayer);
+        Set<Position> pawnPositions = board.getPawnPositions(currentPlayer);
+        Set<Position> piecePositions = new ImmutableSet.Builder<Position>()
+                .add(kingPos)
+                .addAll(pawnPositions)
+                .build();
 
         Position opponentKingPos = board.getKingPosition(opponent);
         Set<Position> opponentPawnPositions = new HashSet<>(board.getPawnPositions(opponent));
@@ -193,7 +227,8 @@ public final class Evaluator {
         for (Position pawnPosition : pawnPositions) {
             for (Position validMove : validMoves) {
                 Position potentialMovePos = pawnPosition.add(validMove);
-                if (!potentialMovePos.isValid()) {
+
+                if (!isValidPosition(potentialMovePos, piecePositions)) {
                     continue;
                 }
 
@@ -206,6 +241,11 @@ public final class Evaluator {
                 }
             }
         }
+    }
+
+    private static boolean isValidPosition(final Position position,
+                                           final Set<Position> piecePositions) {
+        return position.isValid() && !piecePositions.contains(position);
     }
 
     private static Set<Position> getValidMoves(final Board board) {
