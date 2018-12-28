@@ -95,6 +95,10 @@ Row  +----+----+----+----+----+
     }
 
     public void makeMove(final Move move) {
+        if (gameOver) {
+            throw new RuntimeException("Game is over and was already won by " + gameWinner.get());
+        }
+
         Position from = move.getFrom();
         Position to = move.getTo();
         Card playedCard = move.getCard();
@@ -106,29 +110,16 @@ Row  +----+----+----+----+----+
             .addAll(pawnPositions)
             .build();
 
-        validateMove(from, to, playedCard, piecePositions);
+        validateMove(currentPlayer, move, playedCard, piecePositions);
 
         PieceType pieceTypeToMove = from.equals(kingPos) ? PieceType.KING : PieceType.PAWN;
 
         Player opponent = currentPlayer.getOpponent();
         Position opponentKingPos = getKingPosition(opponent);
         Set<Position> opponentPawnPositions = getPawnPositions(opponent);
-
         Position opponentKingHome = currentPlayer == Player.P1 ? P2_KING_SLOT : P1_KING_SLOT;
 
-        /**
-         * 1) Move King to empty square
-         * 2) Move King - capture pawn
-         * 3) Move King - capture king - game over
-         * 4) Move King - opponent home - game over
-         *
-         * 5) Move Pawn - capture pawn
-         * 6) Move Pawn to empty square
-         * 7) Move Pawn - capture king - game over
-         */
-
         Position toCopy = to.copy();
-
         // King Movement
         if (pieceTypeToMove == PieceType.KING) {
             // Perform the king move
@@ -217,12 +208,20 @@ Row  +----+----+----+----+----+
     }
 
     private int getSetBitPosFromPosition(final Position position) {
+        if (position == null) {
+            return -1;
+        }
+
         return position.getRow() * Board.MAX_ROWS + position.getCol();
     }
 
     private int getValueWithBitSetAtPos(final int value,
                                         final int bitPos) {
-        return value | (1 << (bitPos-1));
+        if (bitPos < 0) {
+            return 0;
+        }
+
+        return value | (1 << (BOARD_INDEX_MAX - bitPos));
     }
 
     private void triggerGameOver() {
@@ -230,10 +229,13 @@ Row  +----+----+----+----+----+
         gameOver = true;
     }
 
-    private void validateMove(final Position from,
-                              final Position to,
+    private void validateMove(final Player currentPlayer,
+                              final Move move,
                               final Card card,
                               final Set<Position> piecePositions) {
+        Position from = move.getFrom();
+        Position to = move.getTo();
+
         if (!from.isValid() || !to.isValid()) {
             throw new IllegalArgumentException("From/To Position out of bounds, from = " + from + ", to = " + to);
         }
@@ -246,6 +248,10 @@ Row  +----+----+----+----+----+
         List<Card> cards = getCards(currentPlayer);
         if (!cards.contains(card)) {
             throw new IllegalArgumentException("Card = " + card + " not in the list of playable cards for current player = " + cards);
+        }
+
+        if (!card.isValidMove(currentPlayer, from, to)) {
+            throw new IllegalArgumentException("Cannot play move = " + move + " with card = " + card);
         }
     }
 
@@ -269,6 +275,9 @@ Row  +----+----+----+----+----+
 
     public Position getKingPosition(final Player player) {
         int kingPosition = player == Player.P1 ? p1King : p2King;
+        if (kingPosition == 0) {
+            return null;
+        }
         int oneDimensionBoardPos = BoardUtil.get1DBoardPosition(kingPosition);
         return BoardUtil.get2DBoardPosition(oneDimensionBoardPos);
     }

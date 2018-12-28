@@ -106,6 +106,20 @@ public enum Card {
         return result;
     }
 
+    public boolean isValidMove(final Player player,
+                               final Position from,
+                               final Position to) {
+        List<Position> relativeMoves = getRelativeMoves(player);
+
+        for (Position relativeMove : relativeMoves) {
+            if (from.add(relativeMove).equals(to)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public List<Position> getAbsoluteMoves() {
         List<Position> relativeMoves = getRelativeMoves(Player.P1);
 
