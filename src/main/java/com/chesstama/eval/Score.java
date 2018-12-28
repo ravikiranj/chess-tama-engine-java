@@ -4,14 +4,30 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Score {
+public class Score implements Comparable<Score> {
+    public static final Score MAX_SCORE;
+    public static final Score MIN_SCORE;
+
+    static {
+        MAX_SCORE = new Score();
+        MAX_SCORE.add(EvalRule.GAME_WON);
+
+        MIN_SCORE = new Score();
+        MIN_SCORE.add(EvalRule.GAME_LOST);
+    }
+
     private static final ScoreMapComparator SCORE_MAP_COMPARATOR = new ScoreMapComparator();
 
     private final Map<EvalRule, Integer> scoreMap;
     private long totalScore;
 
     public Score() {
+        this(0L);
+    }
+
+    public Score(final long totalScore) {
         this.scoreMap = new HashMap<>();
+        this.totalScore = totalScore;
     }
 
     public void add(final EvalRule evalRule) {
@@ -57,6 +73,19 @@ public class Score {
         stringBuilder.append(String.format("Total Score = %d\n", totalScore));
 
         return stringBuilder.toString();
+    }
+
+    @Override
+    public int compareTo(final Score o) {
+        return Long.compare(this.totalScore, o.totalScore);
+    }
+
+    public static Score max(final Score s1, final Score s2) {
+        return s1.compareTo(s2) >= 0 ? s1 : s2;
+    }
+
+    public static Score min(final Score s1, final Score s2) {
+        return s1.compareTo(s2) >= 0 ? s2 : s1;
     }
 
     private static class ScoreMapComparator implements Comparator<Map.Entry<EvalRule, Integer>> {

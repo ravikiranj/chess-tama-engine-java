@@ -2,10 +2,10 @@ package com.chesstama.engine;
 
 import com.chesstama.util.BoardUtil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -84,8 +84,8 @@ public enum Card {
     }
 
     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-    public List<Position> getRelativeMoves(final Player player) {
-        List<Position> result = new ArrayList<>();
+    public Set<Position> getRelativeMoves(final Player player) {
+        Set<Position> result = new HashSet<>();
         int cardPosition = value;
 
         while (cardPosition != 0) {
@@ -109,7 +109,7 @@ public enum Card {
     public boolean isValidMove(final Player player,
                                final Position from,
                                final Position to) {
-        List<Position> relativeMoves = getRelativeMoves(player);
+        Set<Position> relativeMoves = getRelativeMoves(player);
 
         for (Position relativeMove : relativeMoves) {
             if (from.add(relativeMove).equals(to)) {
@@ -120,12 +120,12 @@ public enum Card {
         return false;
     }
 
-    public List<Position> getAbsoluteMoves() {
-        List<Position> relativeMoves = getRelativeMoves(Player.P1);
+    public Set<Position> getAbsoluteMoves() {
+       Set<Position> relativeMoves = getRelativeMoves(Player.P1);
 
         return relativeMoves.stream()
                             .map(pos -> new Position(CARD_CENTER_ROW + pos.getRow(), CARD_CENTER_COL + pos.getCol()))
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toSet());
     }
 
     public static Card getCardFromValue(final int value) {

@@ -9,7 +9,9 @@ public enum EvalRule {
     UNIQUE_MOVE(BASE_SCORE * 250),
     KING_CAPTURE(BASE_SCORE * -50_000),
     KING_HOME(BASE_SCORE * -50_000),
-    PAWN_CAPTURE(BASE_SCORE * -5000);
+    PAWN_CAPTURE(BASE_SCORE * -5000),
+    GAME_WON(BASE_SCORE * Long.MAX_VALUE),
+    GAME_LOST(BASE_SCORE * Long.MIN_VALUE);
 
     private final long score;
 

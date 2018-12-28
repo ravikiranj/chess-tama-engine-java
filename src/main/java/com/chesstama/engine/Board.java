@@ -1,16 +1,20 @@
 package com.chesstama.engine;
 
+import com.chesstama.eval.CardMove;
 import com.chesstama.eval.Move;
+import com.chesstama.eval.PiecePosition;
 import com.chesstama.util.BoardUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class Board {
@@ -87,11 +91,41 @@ Row  +----+----+----+----+----+
 
         this.currentPlayer = builder.currentPlayer;
 
-        this.gameOver = false;
-        this.gameWinner = Optional.empty();
+        this.gameOver = builder.gameOver;
+        this.gameWinner = builder.gameWinner;
 
         assertValidCardState();
 
+    }
+
+    public Board copy() {
+        Builder builder = new Builder()
+            .withP1King(p1King)
+            .withP1Pawns(p1Pawns)
+            .withP2King(p2King)
+            .withP2Pawns(p2Pawns)
+            .withP1Cards(copyList(p1Cards))
+            .withP1UpcomingCard(p1UpcomingCard)
+            .withP2Cards(copyList(p2Cards))
+            .withP2UpcomingCard(p2UpcomingCard)
+            .withCurrentPlayer(currentPlayer)
+            .withGameOver(gameOver)
+            .withGameWinner(gameWinner);
+
+        return new Board(builder);
+    }
+
+    private <T> List<T> copyList(final List<T> list) {
+        if (list == null) {
+            return null;
+        }
+
+        if (list.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return list.stream()
+                   .collect(Collectors.toList());
     }
 
     public void makeMove(final Move move) {
@@ -303,6 +337,30 @@ Row  +----+----+----+----+----+
         return result;
     }
 
+    public Set<PiecePosition> getAllPiecePositions(final Player player) {
+        Set<PiecePosition> piecePositions = new HashSet<>();
+        piecePositions.add(new PiecePosition(PieceType.KING, getKingPosition(player)));
+
+        getPawnPositions(player).stream()
+                                .forEach(position -> piecePositions.add(new PiecePosition(PieceType.PAWN, position)));
+
+        return Collections.unmodifiableSet(piecePositions);
+
+    }
+
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+    public Set<CardMove> getAllCardMoves(final Player player) {
+        Set<CardMove> cardMoves = new HashSet<>();
+
+        for (Card card : getCards(player)) {
+            card.getRelativeMoves(player)
+                .stream()
+                .forEach(move -> cardMoves.add(new CardMove(card, move)));
+        }
+
+        return Collections.unmodifiableSet(cardMoves);
+    }
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("Board {");
@@ -403,6 +461,9 @@ Row  +----+----+----+----+----+
 
         private Player currentPlayer = Player.P1;
 
+        private boolean gameOver;
+        private Optional<Player> gameWinner = Optional.empty();
+
         public Builder() {
             p1Cards = new ArrayList<>();
             p1Cards.add(Card.MONKEY);
@@ -455,6 +516,16 @@ Row  +----+----+----+----+----+
 
         public Builder withCurrentPlayer(final Player currentPlayer) {
             this.currentPlayer = currentPlayer;
+            return this;
+        }
+
+        public Builder withGameOver(final boolean gameOver) {
+            this.gameOver = gameOver;
+            return this;
+        }
+
+        public Builder withGameWinner(final Optional<Player> gameWinner) {
+            this.gameWinner = gameWinner;
             return this;
         }
 

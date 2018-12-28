@@ -22,6 +22,11 @@ public final class Evaluator {
     }
 
     public static Score getBoardValue(final Board board) {
+        if (board.isGameOver()) {
+            Player winner = board.getGameWinner().get();
+            return winner == board.getCurrentPlayer() ? Score.MAX_SCORE : Score.MIN_SCORE;
+        }
+
         Score totalScore = new Score();
         Set<Position> validMoves = getValidMoves(board);
         Set<Position> validOpponentMoves = getValidMovesForOpponent(board);
