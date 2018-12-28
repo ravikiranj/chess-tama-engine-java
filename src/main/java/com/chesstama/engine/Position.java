@@ -19,6 +19,10 @@ public class Position {
         return col;
     }
 
+    public Position copy() {
+        return new Position(row, col);
+    }
+
     public Position negate() {
         return new Position(-1 * row, -1 * col);
     }

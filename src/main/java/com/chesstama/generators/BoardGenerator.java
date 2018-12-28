@@ -39,7 +39,8 @@ public class BoardGenerator {
             },
         };
 
-        Board chessTamaBoard = getBoard(board);
+        //Board chessTamaBoard = getBoard(board);
+        Board chessTamaBoard = new Board.Builder().build();
         log.info("Board = {}", chessTamaBoard);
         chessTamaBoard.printBoardOnly();
     }

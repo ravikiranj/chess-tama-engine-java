@@ -18,9 +18,6 @@ import java.util.stream.Collectors;
 public final class Evaluator {
     public static final int BASE_SCORE = 1;
 
-    private static final Position P1_KING_SLOT = new Position(4, 2);
-    private static final Position P2_KING_SLOT = new Position(0, 2);
-
     private Evaluator() {
     }
 
@@ -53,7 +50,7 @@ public final class Evaluator {
         Player opponent = currentPlayer.getOpponent();
 
         Position kingPos = board.getKingPosition(currentPlayer);
-        Position kingHome = currentPlayer == Player.P1 ? P1_KING_SLOT : P2_KING_SLOT;
+        Position kingHome = currentPlayer == Player.P1 ? Board.P1_KING_SLOT : Board.P2_KING_SLOT;
         Set<Position> pawnPositions = board.getPawnPositions(currentPlayer);
 
         Position opponentKingPos = board.getKingPosition(opponent);
@@ -178,7 +175,7 @@ public final class Evaluator {
                 .build();
 
         Position opponentKingPos = board.getKingPosition(opponent);
-        Position opponentKingHome = currentPlayer == Player.P1 ? P2_KING_SLOT : P1_KING_SLOT;
+        Position opponentKingHome = currentPlayer == Player.P1 ? Board.P2_KING_SLOT : Board.P1_KING_SLOT;
         Set<Position> opponentPawnPositions = new HashSet<>(board.getPawnPositions(opponent));
 
         for (Position validMove : validMoves) {

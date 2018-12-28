@@ -1,12 +1,15 @@
 package com.chesstama.engine;
 
+import com.chesstama.eval.Move;
 import com.chesstama.util.BoardUtil;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -42,6 +45,9 @@ Row  +----+----+----+----+----+
     public static final int MIN_COL_INDEX = 0;
     public static final int MAX_COL_INDEX = 4;
 
+    public static final Position P1_KING_SLOT = new Position(4, 2);
+    public static final Position P2_KING_SLOT = new Position(0, 2);
+
     // 00 | 00 | 02 | 00
     private int p1King;
 
@@ -63,6 +69,9 @@ Row  +----+----+----+----+----+
 
     private Player currentPlayer;
 
+    private boolean gameOver;
+    private Optional<Player> gameWinner;
+
     private Board(final Builder builder) {
         this.p1King = builder.p1King;
         this.p1Pawns = builder.p1Pawns;
@@ -78,8 +87,174 @@ Row  +----+----+----+----+----+
 
         this.currentPlayer = builder.currentPlayer;
 
+        this.gameOver = false;
+        this.gameWinner = Optional.empty();
+
         assertValidCardState();
 
+    }
+
+    public void makeMove(final Move move) {
+        Position from = move.getFrom();
+        Position to = move.getTo();
+        Card playedCard = move.getCard();
+
+        Position kingPos = getKingPosition(currentPlayer);
+        Set<Position> pawnPositions = getPawnPositions(currentPlayer);
+        Set<Position> piecePositions = new ImmutableSet.Builder<Position>()
+            .add(kingPos)
+            .addAll(pawnPositions)
+            .build();
+
+        validateMove(from, to, playedCard, piecePositions);
+
+        PieceType pieceTypeToMove = from.equals(kingPos) ? PieceType.KING : PieceType.PAWN;
+
+        Player opponent = currentPlayer.getOpponent();
+        Position opponentKingPos = getKingPosition(opponent);
+        Set<Position> opponentPawnPositions = getPawnPositions(opponent);
+
+        Position opponentKingHome = currentPlayer == Player.P1 ? P2_KING_SLOT : P1_KING_SLOT;
+
+        /**
+         * 1) Move King to empty square
+         * 2) Move King - capture pawn
+         * 3) Move King - capture king - game over
+         * 4) Move King - opponent home - game over
+         *
+         * 5) Move Pawn - capture pawn
+         * 6) Move Pawn to empty square
+         * 7) Move Pawn - capture king - game over
+         */
+
+        Position toCopy = to.copy();
+
+        // King Movement
+        if (pieceTypeToMove == PieceType.KING) {
+            // Perform the king move
+            kingPos = toCopy;
+
+            if (to.equals(opponentKingPos)) {
+                // Capture Opponent King
+                opponentKingPos = null;
+                triggerGameOver();
+            } else if (to.equals(opponentKingHome)) {
+                // Reach Opponent King Home
+                triggerGameOver();
+            } else if (opponentPawnPositions.contains(to)) {
+                // Capture Pawn
+                opponentPawnPositions.remove(to);
+            }
+        } else {
+            // Perform the pawn move
+            pawnPositions.remove(from);
+            pawnPositions.add(toCopy);
+
+            if (to.equals(opponentKingPos)) {
+                // Capture Opponent King
+                opponentKingPos = null;
+                triggerGameOver();
+            } else if (opponentPawnPositions.contains(to)) {
+                // Capture Opponent Pawn
+                opponentPawnPositions.remove(to);
+            }
+        }
+
+        updateGameState(
+                kingPos,
+                pawnPositions,
+                opponentKingPos,
+                opponentPawnPositions,
+                playedCard
+        );
+    }
+
+    private void updateGameState(final Position kingPos,
+                                 final Set<Position> pawnPositions,
+                                 final Position opponentKingPos,
+                                 final Set<Position> opponentPawnPositions,
+                                 final Card playedCard) {
+        // Remove played card
+        List<Card> cards = getCards(currentPlayer);
+        cards.remove(playedCard);
+
+        // Fetch upcoming card and add it to list of playable cards
+        cards.add(getUpcomingCard(currentPlayer));
+
+        // Update upcoming card for current player and opponent
+        setUpcomingCard(currentPlayer, Card.EMPTY);
+        setUpcomingCard(currentPlayer.getOpponent(), playedCard);
+
+        // Update king & pawn positions and currentPlayer
+        if (currentPlayer == Player.P1) {
+            // kingPos and pawnPositions is used to set P1 King & P1 Pawns and vice-versa
+            updateKingAndPawnPositions(kingPos, pawnPositions, opponentKingPos, opponentPawnPositions);
+            currentPlayer = Player.P2;
+        } else {
+            updateKingAndPawnPositions(opponentKingPos, opponentPawnPositions, kingPos, pawnPositions);
+            currentPlayer = Player.P1;
+        }
+
+    }
+
+    private void updateKingAndPawnPositions(final Position kingPos,
+                                            final Set<Position> pawnPositions,
+                                            final Position opponentKingPos,
+                                            final Set<Position> opponentPawnPositions) {
+        this.p1King = getValueWithBitSetAtPos(0, getSetBitPosFromPosition(kingPos));
+        this.p1Pawns = getPawnPositions(pawnPositions);
+
+        this.p2King = getValueWithBitSetAtPos(0, getSetBitPosFromPosition(opponentKingPos));
+        this.p2Pawns = getPawnPositions(opponentPawnPositions);
+    }
+
+    private int getPawnPositions(final Set<Position> pawnPositions) {
+        return pawnPositions.stream()
+                            .map(this::getSetBitPosFromPosition)
+                            .map(pos -> getValueWithBitSetAtPos(0, pos))
+                            .reduce((a, b) -> a | b)
+                            .orElseThrow(() -> new RuntimeException("Unable to compute p1Pawns"));
+    }
+
+    private int getSetBitPosFromPosition(final Position position) {
+        return position.getRow() * Board.MAX_ROWS + position.getCol();
+    }
+
+    private int getValueWithBitSetAtPos(final int value,
+                                        final int bitPos) {
+        return value | (1 << (bitPos-1));
+    }
+
+    private void triggerGameOver() {
+        gameWinner = Optional.of(currentPlayer);
+        gameOver = true;
+    }
+
+    private void validateMove(final Position from,
+                              final Position to,
+                              final Card card,
+                              final Set<Position> piecePositions) {
+        if (!from.isValid() || !to.isValid()) {
+            throw new IllegalArgumentException("From/To Position out of bounds, from = " + from + ", to = " + to);
+        }
+
+        if (!piecePositions.contains(from)) {
+            throw new IllegalArgumentException("From position doesn't contain any of the current player pieces, from = "
+                    + from + ", piecePositions = " + piecePositions);
+        }
+
+        List<Card> cards = getCards(currentPlayer);
+        if (!cards.contains(card)) {
+            throw new IllegalArgumentException("Card = " + card + " not in the list of playable cards for current player = " + cards);
+        }
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public Optional<Player> getGameWinner() {
+        return gameWinner;
     }
 
     private void assertValidCardState() {
@@ -137,6 +312,14 @@ Row  +----+----+----+----+----+
 
     public Card getUpcomingCard(final Player player) {
         return player == Player.P1 ? p1UpcomingCard: p2UpcomingCard;
+    }
+
+    public void setUpcomingCard(final Player player, final Card card) {
+        if (player == Player.P1) {
+            p1UpcomingCard = card;
+        } else {
+            p2UpcomingCard = card;
+        }
     }
 
     public Player getCurrentPlayer() {
@@ -203,13 +386,23 @@ Row  +----+----+----+----+----+
         private int p2Pawns = 0xD8000000;
 
         // Default Cards
-        private List<Card> p1Cards = ImmutableList.of(Card.MONKEY, Card.ELEPHANT);
+        private List<Card> p1Cards;
         private Card p1UpcomingCard = Card.TIGER;
 
-        private List<Card> p2Cards = ImmutableList.of(Card.DRAGON, Card.MANTIS);
+        private List<Card> p2Cards;
         private Card p2UpcomingCard = Card.EMPTY;
 
         private Player currentPlayer = Player.P1;
+
+        public Builder() {
+            p1Cards = new ArrayList<>();
+            p1Cards.add(Card.MONKEY);
+            p1Cards.add(Card.ELEPHANT);
+
+            p2Cards = new ArrayList<>();
+            p2Cards.add(Card.DRAGON);
+            p2Cards.add(Card.MANTIS);
+        }
 
         public Builder withP1King(final int p1King) {
             this.p1King = p1King;
