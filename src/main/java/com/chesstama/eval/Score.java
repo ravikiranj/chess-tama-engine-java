@@ -3,6 +3,7 @@ package com.chesstama.eval;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Score implements Comparable<Score> {
     public static final Score MAX_SCORE;
@@ -86,6 +87,24 @@ public class Score implements Comparable<Score> {
 
     public static Score min(final Score s1, final Score s2) {
         return s1.compareTo(s2) >= 0 ? s2 : s1;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Score score = (Score) o;
+        return totalScore == score.totalScore &&
+            scoreMap.equals(score.scoreMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(scoreMap, totalScore);
     }
 
     private static class ScoreMapComparator implements Comparator<Map.Entry<EvalRule, Integer>> {

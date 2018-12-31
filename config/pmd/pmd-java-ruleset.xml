@@ -23,12 +23,18 @@
         <exclude name="ShortClassName" />
         <exclude name="TooManyStaticImports"/>
     </rule>
-    <!-- Override UtilityClass Naming Pattern check -->
+    <!-- CodeStyle Overrides -->
     <rule ref="category/java/codestyle.xml/ClassNamingConventions">
         <properties>
             <property name="utilityClassPattern" value="[A-Z][a-zA-Z0-9]+"/>
         </properties>
     </rule>
+    <rule ref="category/java/codestyle.xml/FieldNamingConventions">
+        <properties>
+            <property name="staticFieldPattern" value="[A-Z][A-Z_0-9]*"/>
+        </properties>
+    </rule>
+
     <rule ref="category/java/errorprone.xml">
         <exclude name="BeanMembersShouldSerialize"/>
         <exclude name="DataflowAnomalyAnalysis"/>
