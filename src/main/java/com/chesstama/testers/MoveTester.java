@@ -153,8 +153,8 @@ public class MoveTester {
         log.info("Game Over = {}, Game Winner = {}", board.isGameOver(), board.getGameWinner());
     }
 
-    private static void makeMoves(final Board board,
-                                  final List<Move> moves) {
+    public static void makeMoves(final Board board,
+                                 final List<Move> moves) {
         int count = 1;
         for (Move move : moves) {
             System.out.println("===========================");

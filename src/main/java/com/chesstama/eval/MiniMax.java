@@ -5,13 +5,13 @@ import com.chesstama.engine.Player;
 import com.chesstama.engine.Position;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
 public final class MiniMax {
-
-    private static final String BAR_SEPARATOR = "=======================";
 
     private MiniMax() {
     }
@@ -37,12 +37,15 @@ public final class MiniMax {
      * @return
      */
     @SuppressWarnings({"Duplicates", "PMD.AvoidReassigningParameters", "PMD.AvoidInstantiatingObjectsInLoops"})
-    public static Score getBestMove(Board board,
-                                    final int maxDepth,
-                                    final boolean isMaximizingPlayer) {
+    public static ScoreMoves getBestMove(Board board,
+                                         final int maxDepth,
+                                         final boolean isMaximizingPlayer,
+                                         final List<Move> currentMovePath) {
         if (maxDepth == 0 || board.isGameOver()) {
-            log.info("Max Depth = {}, isGameOver = {}", maxDepth, board.isGameOver());
-            return Evaluator.getBoardValue(board);
+            Score score = Evaluator.getBoardValue(board);
+            log.info("Score = {}, Max Depth = {}, isGameOver = {}, Score = {}", score, maxDepth, board.isGameOver());
+
+            return new ScoreMoves(score, new ArrayList<>(currentMovePath));
         }
 
         Player currentPlayer = board.getCurrentPlayer();
@@ -53,7 +56,7 @@ public final class MiniMax {
         Set<CardMove> cardMoves = board.getAllCardMoves(currentPlayer);
 
         if (isMaximizingPlayer) {
-            Score score = new Score(Long.MIN_VALUE);
+            ScoreMoves scoreMoves = new ScoreMoves(Score.MIN_SCORE, new ArrayList<>());
 
             for (PiecePosition piecePosition : piecePositions) {
                 for (CardMove cardMove : cardMoves) {
@@ -64,6 +67,7 @@ public final class MiniMax {
                         continue;
                     }
 
+                    // Compute move
                     Move move = new Move(
                         currentPlayer,
                         cardMove.getCard(),
@@ -75,21 +79,31 @@ public final class MiniMax {
                     // Save board state
                     Board boardCopy = board.copy();
 
-                    log.info("About to make move = {}", move);
-                    board.printBoardOnly();
-
+                    // Make move
                     board.makeMove(move);
-                    printBoardMoveScore(board, move, score);
-                    score = Score.max(score, getBestMove(board, maxDepth-1, false));
+
+                    // Add move to current path
+                    currentMovePath.add(move);
+
+                    // Compute score
+                    ScoreMoves currentScoreMoves = getBestMove(board, maxDepth-1, false, currentMovePath);
+
+                    // Remove move from current path
+                    currentMovePath.remove(currentMovePath.size() - 1);
+
+                    // Update scoreMoves if applicable
+                    if (currentScoreMoves.compareTo(scoreMoves) > 0) {
+                        scoreMoves = currentScoreMoves;
+                    }
 
                     // Restore board state
                     board = boardCopy;
                 }
             }
 
-            return score;
+            return scoreMoves;
         } else {
-            Score score = new Score(Long.MAX_VALUE);
+            ScoreMoves scoreMoves = new ScoreMoves(Score.MAX_SCORE, new ArrayList<>());
 
             for (PiecePosition piecePosition : piecePositions) {
                 for (CardMove cardMove : cardMoves) {
@@ -100,6 +114,7 @@ public final class MiniMax {
                         continue;
                     }
 
+                    // Compute move
                     Move move = new Move(
                         currentPlayer,
                         cardMove.getCard(),
@@ -111,16 +126,29 @@ public final class MiniMax {
                     // Save board state
                     Board boardCopy = board.copy();
 
+                    // Make move
                     board.makeMove(move);
-                    printBoardMoveScore(board, move, score);
-                    score = Score.min(score, getBestMove(board, maxDepth-1, true));
+
+                    // Add current move to path
+                    currentMovePath.add(move);
+
+                    // Compute score
+                    ScoreMoves currentScoreMoves = getBestMove(board, maxDepth-1, true, currentMovePath);
+
+                    // Remove current move from path
+                    currentMovePath.remove(currentMovePath.size()-1);
+
+                    // Update scoreMoves if applicable
+                    if (currentScoreMoves.compareTo(scoreMoves) < 0) {
+                        scoreMoves = currentScoreMoves;
+                    }
 
                     // Restore board state
                     board = boardCopy;
                 }
             }
 
-            return score;
+            return scoreMoves;
         }
     }
 
@@ -130,18 +158,4 @@ public final class MiniMax {
         return from.isValid() && to.isValid() && !rawPiecePositions.contains(to);
     }
 
-    private static void printBoardMoveScore(final Board board,
-                                            final Move move,
-                                            final Score score) {
-        System.out.println("\n");
-        System.out.println(BAR_SEPARATOR);
-        System.out.println("Print Board Start");
-        System.out.println(BAR_SEPARATOR);
-        log.info("Score = {}, Move = {}", score, move);
-        System.out.println("\n");
-        board.printBoardOnly();
-        System.out.println(BAR_SEPARATOR);
-        System.out.println("Print Board End");
-        System.out.println(BAR_SEPARATOR);
-    }
 }
