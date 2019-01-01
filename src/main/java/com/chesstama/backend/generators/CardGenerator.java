@@ -1,7 +1,13 @@
 package com.chesstama.backend.generators;
 
 import com.chesstama.backend.engine.Board;
+import com.chesstama.backend.engine.Card;
+import com.chesstama.backend.engine.Position;
+import com.chesstama.backend.engine.RawCard;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class CardGenerator {
@@ -9,16 +15,16 @@ public class CardGenerator {
     public static void main(final String[] args) {
         final int[][] board = new int[][]{
             {
-                0, 0, 1, 0, 0
-            },
-            {
-                0, 0, 0, 0, 0
-            },
-            {
                 0, 0, 0, 0, 0
             },
             {
                 0, 0, 1, 0, 0
+            },
+            {
+                0, 1, 0, 1, 0           // CENTER ROW
+            },
+            {
+                0, 0, 0, 0, 0
             },
             {
                 0, 0, 0, 0, 0
@@ -26,9 +32,40 @@ public class CardGenerator {
         };
 
         printCard(board);
-        final int value = getCardValue(board);
-        final String hexValue = String.format("%08X", value);
+        int value = getCardValue(board);
+        String hexValue = String.format("%08X", value);
         log.info("Value in Dec = {}, Hex = 0x{}", value, hexValue);
+
+        printAllRawCardValues();
+    }
+
+    private static void printAllRawCardValues() {
+        for (RawCard card : RawCard.values()) {
+            int value = getCardValue(getRawCardBoard(card));
+            String hexValue = String.format("%08X", value);
+            log.info("Card = {}, Hex = 0x{}", card.name(), hexValue);
+        }
+    }
+
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+    private static int[][] getRawCardBoard(final RawCard card) {
+        int[][] board = new int[Board.MAX_ROWS][Board.MAX_COLS];
+
+        Set<Position> cardPositions = card.getPositions()
+            .stream()
+            .map(pos -> new Position(Card.CARD_CENTER_ROW + pos.getRow(), Card.CARD_CENTER_COL + pos.getCol()))
+            .collect(Collectors.toSet());
+
+        for (int row = 0; row < Board.MAX_ROWS; row++) {
+            for (int col = 0; col < Board.MAX_COLS; col++) {
+                Position pos = new Position(row, col);
+                if (cardPositions.contains(pos)) {
+                    board[row][col] = 1;
+                }
+            }
+        }
+
+        return board;
     }
 
     private static void printCard(final int[][] board) {

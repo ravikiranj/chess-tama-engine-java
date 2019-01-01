@@ -18,12 +18,34 @@ public enum Card {
 
                ↑
          .  .  .  .  .
-         .  X  .  X  .
+         X  .  .  .  X
          .  .  M  .  .
          .  X  .  X  .
          .  .  .  .  .
+
      */
-    MONKEY(0x280A000),
+    DRAGON(0x0440A000),
+
+    /*
+               ↑
+         .  .  .  .  .
+         .  .  X  .  .
+         .  X  M  X  .
+         .  .  .  .  .
+         .  .  .  .  .
+     */
+    BOAR(0x01140000),
+
+    /*
+               ↑
+         .  .  .  .  .
+         .  X  .  X  .
+         .  .  M  .  .
+         .  .  X  .  .
+         .  .  .  .  .
+
+     */
+    MANTIS(0x02804000),
 
     /*
                ↑
@@ -33,28 +55,47 @@ public enum Card {
          .  .  .  .  .
          .  .  .  .  .
      */
-    ELEPHANT(0x2940000),
+    ELEPHANT(0x02940000),
 
     /*
                ↑
          .  .  .  .  .
-         .  X  .  X  .
-         .  .  M  .  .
-         .  .  X  .  .
-         .  .  .  .  .
-    */
-    MANTIS(0x2804000),
-
-
-    /*
-               ↑
-         .  .  .  .  .
-         X  .  .  .  X
-         .  .  M  .  .
-         .  X  .  X  .
+         .  .  .  X  .
+         .  X  M  X  .
+         .  X  .  .  .
          .  .  .  .  .
      */
-    DRAGON(0x440A000),
+    ROOSTER(0x00948000),
+
+    /*
+               ↑
+         .  .  .  .  .
+         .  .  .  X  .
+         .  X  M  .  .
+         .  .  .  X  .
+         .  .  .  .  .
+     */
+    COBRA(0x00902000),
+
+    /*
+               ↑
+         .  .  .  .  .
+         .  .  X  .  .
+         .  .  M  X  .
+         .  .  X  .  .
+         .  .  .  .  .
+     */
+    OX(0x01044000),
+
+    /*
+               ↑
+         .  .  .  .  .
+         .  .  .  X  .
+         .  .  M  .  X
+         .  X  .  .  .
+         .  .  .  .  .
+     */
+    RABBIT(0x00828000),
 
     /*
                ↑
@@ -65,15 +106,85 @@ public enum Card {
          .  .  .  .  .
      */
     TIGER(0x20004000),
+
+    /*
+               ↑
+         .  .  .  .  .
+         .  .  X  .  .
+         X  .  M  .  X
+         .  .  .  .  .
+         .  .  .  .  .
+     */
+    CRAB(0x01220000),
+
+    /*
+               ↑
+         .  .  .  .  .
+         .  X  .  .  .
+         .  X  M  X  .
+         .  .  .  X  .
+         .  .  .  .  .
+     */
+    GOOSE(0x02142000),
+
+    /*
+               ↑
+         .  .  .  .  .
+         .  .  X  .  .
+         .  .  M  .  .
+         .  X  .  X  .
+         .  .  .  .  .
+     */
+    CRANE(0x0100A000),
+
+    /*
+               ↑
+         .  .  .  .  .
+         .  .  X  .  .
+         .  X  M  .  .
+         .  .  X  .  .
+         .  .  .  .  .
+     */
+    HORSE(0x01104000),
+
+    /*
+               ↑
+         .  .  .  .  .
+         .  X  .  .  .
+         .  .  M  X  .
+         .  X  .  .  .
+         .  .  .  .  .
+     */
+    EEL(0x02048000),
+
+    /*
+               ↑
+         .  .  .  .  .
+         .  X  .  .  .
+         X  .  M  .  .
+         .  .  .  X  .
+         .  .  .  .  .
+     */
+    FROG(0x02202000),
+
+    /*
+               ↑
+         .  .  .  .  .
+         .  X  .  X  .
+         .  .  M  .  .
+         .  X  .  X  .
+         .  .  .  .  .
+     */
+    MONKEY(0x0280A000),
     EMPTY(0x00000000);
 
-    private final int value;
-
-    private static final int CARD_CENTER_ROW = 2;
-    private static final int CARD_CENTER_COL = 2;
+    public static final int CARD_CENTER_ROW = 2;
+    public static final int CARD_CENTER_COL = 2;
 
     private static final Map<Integer, Card> CARD_MAP = Arrays.stream(Card.values())
         .collect(Collectors.toMap(Card::getValue, Function.identity()));
+
+    private final int value;
 
     Card(final int value) {
         this.value = value;
