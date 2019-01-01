@@ -1,9 +1,9 @@
-package com.chesstama.eval;
+package com.chesstama.backend.eval;
 
-import com.chesstama.engine.Card;
-import com.chesstama.engine.PieceType;
-import com.chesstama.engine.Player;
-import com.chesstama.engine.Position;
+import com.chesstama.backend.engine.Card;
+import com.chesstama.backend.engine.PieceType;
+import com.chesstama.backend.engine.Player;
+import com.chesstama.backend.engine.Position;
 
 import java.util.Objects;
 

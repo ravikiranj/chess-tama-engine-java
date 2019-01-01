@@ -38,7 +38,7 @@ sourceSets.main {
     }
 }
 
-task wrapper(type: Wrapper) {
+wrapper {
     gradleVersion = '4.1'
 }
 
@@ -61,4 +61,14 @@ pmd {
 lombok {
     version = "1.16.20"
     sha256 = ""
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "com.chesstama.backend.App"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }

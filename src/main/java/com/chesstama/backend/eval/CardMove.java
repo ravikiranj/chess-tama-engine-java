@@ -1,7 +1,7 @@
-package com.chesstama.eval;
+package com.chesstama.backend.eval;
 
-import com.chesstama.engine.Card;
-import com.chesstama.engine.Position;
+import com.chesstama.backend.engine.Card;
+import com.chesstama.backend.engine.Position;
 
 public class CardMove {
     private final Card card;

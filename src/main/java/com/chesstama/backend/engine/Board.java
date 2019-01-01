@@ -1,9 +1,9 @@
-package com.chesstama.engine;
+package com.chesstama.backend.engine;
 
-import com.chesstama.eval.CardMove;
-import com.chesstama.eval.Move;
-import com.chesstama.eval.PiecePosition;
-import com.chesstama.util.BoardUtil;
+import com.chesstama.backend.eval.CardMove;
+import com.chesstama.backend.eval.Move;
+import com.chesstama.backend.eval.PiecePosition;
+import com.chesstama.backend.util.BoardUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;

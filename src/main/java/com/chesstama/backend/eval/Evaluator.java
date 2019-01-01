@@ -1,9 +1,9 @@
-package com.chesstama.eval;
+package com.chesstama.backend.eval;
 
-import com.chesstama.engine.Board;
-import com.chesstama.engine.Card;
-import com.chesstama.engine.Player;
-import com.chesstama.engine.Position;
+import com.chesstama.backend.engine.Board;
+import com.chesstama.backend.engine.Card;
+import com.chesstama.backend.engine.Player;
+import com.chesstama.backend.engine.Position;
 import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
 

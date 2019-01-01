@@ -1,4 +1,4 @@
-package com.chesstama.eval;
+package com.chesstama.backend.eval;
 
 import java.util.List;
 import java.util.Objects;

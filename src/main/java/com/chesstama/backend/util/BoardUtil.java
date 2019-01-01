@@ -1,7 +1,7 @@
-package com.chesstama.util;
+package com.chesstama.backend.util;
 
-import com.chesstama.engine.Board;
-import com.chesstama.engine.Position;
+import com.chesstama.backend.engine.Board;
+import com.chesstama.backend.engine.Position;
 
 public final class BoardUtil {
     private BoardUtil() {

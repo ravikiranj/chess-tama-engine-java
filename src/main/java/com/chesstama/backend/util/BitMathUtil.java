@@ -1,4 +1,4 @@
-package com.chesstama.util;
+package com.chesstama.backend.util;
 
 public final class BitMathUtil {
 

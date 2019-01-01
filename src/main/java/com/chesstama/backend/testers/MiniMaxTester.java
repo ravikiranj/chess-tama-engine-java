@@ -1,10 +1,10 @@
-package com.chesstama.testers;
+package com.chesstama.backend.testers;
 
-import com.chesstama.engine.Board;
-import com.chesstama.eval.MiniMax;
-import com.chesstama.eval.MiniMaxWithAlphaBeta;
-import com.chesstama.eval.Score;
-import com.chesstama.eval.ScoreMoves;
+import com.chesstama.backend.engine.Board;
+import com.chesstama.backend.eval.MiniMax;
+import com.chesstama.backend.eval.MiniMaxWithAlphaBeta;
+import com.chesstama.backend.eval.Score;
+import com.chesstama.backend.eval.ScoreMoves;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;

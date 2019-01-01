@@ -1,11 +1,11 @@
-package com.chesstama.testers;
+package com.chesstama.backend.testers;
 
-import com.chesstama.engine.Board;
-import com.chesstama.engine.Card;
-import com.chesstama.engine.PieceType;
-import com.chesstama.engine.Player;
-import com.chesstama.engine.Position;
-import com.chesstama.eval.Move;
+import com.chesstama.backend.engine.Board;
+import com.chesstama.backend.engine.Card;
+import com.chesstama.backend.engine.PieceType;
+import com.chesstama.backend.engine.Player;
+import com.chesstama.backend.engine.Position;
+import com.chesstama.backend.eval.Move;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 

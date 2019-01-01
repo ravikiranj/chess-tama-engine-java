@@ -1,6 +1,6 @@
-package com.chesstama.eval;
+package com.chesstama.backend.eval;
 
-import static com.chesstama.eval.Evaluator.BASE_SCORE;
+import static com.chesstama.backend.eval.Evaluator.BASE_SCORE;
 
 public enum EvalRule {
     OPP_KING_CAPTURE(BASE_SCORE * 100_000),

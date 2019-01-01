@@ -1,4 +1,4 @@
-package com.chesstama.engine;
+package com.chesstama.backend.engine;
 
 import java.util.Objects;
 

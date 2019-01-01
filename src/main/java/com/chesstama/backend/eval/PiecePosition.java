@@ -1,7 +1,7 @@
-package com.chesstama.eval;
+package com.chesstama.backend.eval;
 
-import com.chesstama.engine.PieceType;
-import com.chesstama.engine.Position;
+import com.chesstama.backend.engine.PieceType;
+import com.chesstama.backend.engine.Position;
 
 public class PiecePosition {
     private final PieceType pieceType;

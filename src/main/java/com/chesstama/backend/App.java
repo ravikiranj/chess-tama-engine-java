@@ -1,15 +1,15 @@
-package com.chesstama;
+package com.chesstama.backend;
 
-import com.chesstama.engine.Board;
-import com.chesstama.eval.Evaluator;
-import com.chesstama.generators.BoardGenerator;
+import com.chesstama.backend.engine.Board;
+import com.chesstama.backend.eval.Evaluator;
+import com.chesstama.backend.generators.BoardGenerator;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.chesstama.generators.BoardGenerator.ET;
-import static com.chesstama.generators.BoardGenerator.K1;
-import static com.chesstama.generators.BoardGenerator.K2;
-import static com.chesstama.generators.BoardGenerator.P1;
-import static com.chesstama.generators.BoardGenerator.P2;
+import static com.chesstama.backend.generators.BoardGenerator.ET;
+import static com.chesstama.backend.generators.BoardGenerator.K1;
+import static com.chesstama.backend.generators.BoardGenerator.K2;
+import static com.chesstama.backend.generators.BoardGenerator.P1;
+import static com.chesstama.backend.generators.BoardGenerator.P2;
 
 @Slf4j
 public class App {

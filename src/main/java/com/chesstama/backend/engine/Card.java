@@ -1,6 +1,6 @@
-package com.chesstama.engine;
+package com.chesstama.backend.engine;
 
-import com.chesstama.util.BoardUtil;
+import com.chesstama.backend.util.BoardUtil;
 
 import java.util.Arrays;
 import java.util.HashSet;

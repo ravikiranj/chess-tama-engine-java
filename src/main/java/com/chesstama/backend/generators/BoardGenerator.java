@@ -1,6 +1,6 @@
-package com.chesstama.generators;
+package com.chesstama.backend.generators;
 
-import com.chesstama.engine.Board;
+import com.chesstama.backend.engine.Board;
 import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
 

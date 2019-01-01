@@ -1,6 +1,6 @@
-package com.chesstama.generators;
+package com.chesstama.backend.generators;
 
-import com.chesstama.engine.Board;
+import com.chesstama.backend.engine.Board;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -47,7 +47,7 @@ public class CardGenerator {
         System.out.println("==============================");
     }
 
-    private static int getCardValue(final int[][] board) {
+    public static int getCardValue(final int[][] board) {
         int value = 0;
 
         for (int row = 0; row < Board.MAX_ROWS; row++) {
