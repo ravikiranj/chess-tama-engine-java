@@ -439,6 +439,74 @@ Row  +----+----+----+----+----+
 
     }
 
+    public void setP1King(final int p1King) {
+        this.p1King = p1King;
+    }
+
+    public void setP1Pawns(final int p1Pawns) {
+        this.p1Pawns = p1Pawns;
+    }
+
+    public void setP2King(final int p2King) {
+        this.p2King = p2King;
+    }
+
+    public void setP2Pawns(final int p2Pawns) {
+        this.p2Pawns = p2Pawns;
+    }
+
+    public void setP1UpcomingCard(final Card p1UpcomingCard) {
+        this.p1UpcomingCard = p1UpcomingCard;
+    }
+
+    public void setP2UpcomingCard(final Card p2UpcomingCard) {
+        this.p2UpcomingCard = p2UpcomingCard;
+    }
+
+    public void setCurrentPlayer(final Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
+
+    public void setGameOver(final boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
+    public void setGameWinner(final Optional<Player> gameWinner) {
+        this.gameWinner = gameWinner;
+    }
+
+    public int getP1King() {
+        return p1King;
+    }
+
+    public int getP1Pawns() {
+        return p1Pawns;
+    }
+
+    public int getP2King() {
+        return p2King;
+    }
+
+    public int getP2Pawns() {
+        return p2Pawns;
+    }
+
+    public List<Card> getP1Cards() {
+        return p1Cards;
+    }
+
+    public Card getP1UpcomingCard() {
+        return p1UpcomingCard;
+    }
+
+    public List<Card> getP2Cards() {
+        return p2Cards;
+    }
+
+    public Card getP2UpcomingCard() {
+        return p2UpcomingCard;
+    }
+
     public static final class Builder {
         // 00 | 00 | 02 | 00
         private int p1King = 0x00000200;
