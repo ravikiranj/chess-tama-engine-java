@@ -234,6 +234,10 @@ Row  +----+----+----+----+----+
     }
 
     private int getPawnPositions(final Set<Position> pawnPositions) {
+        if (pawnPositions.isEmpty()) {
+            return 0;
+        }
+
         return pawnPositions.stream()
                             .map(this::getSetBitPosFromPosition)
                             .map(pos -> getValueWithBitSetAtPos(0, pos))
