@@ -22,9 +22,17 @@ public final class Evaluator {
     }
 
     public static Score getBoardValue(final Board board) {
+        return getBoardValue(board, false);
+    }
+
+    public static Score getBoardValue(final Board board, final boolean toggleCurrentPlayerForEval) {
         if (board.isGameOver()) {
             Player winner = board.getGameWinner().get();
             return winner == board.getCurrentPlayer() ? Score.GAME_WON_SCORE : Score.GAME_LOST_SCORE;
+        }
+
+        if (toggleCurrentPlayerForEval) {
+            board.toggleCurrentPlayer();
         }
 
         Score totalScore = new Score();
@@ -37,6 +45,10 @@ public final class Evaluator {
 
         computeOpponentKingScore(board, validOpponentMoves, totalScore);
         computeOpponentPawnScore(board, validOpponentMoves, totalScore);
+
+        if (toggleCurrentPlayerForEval) {
+            board.toggleCurrentPlayer();
+        }
 
         return totalScore;
     }

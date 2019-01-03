@@ -38,7 +38,7 @@ public final class MiniMaxWithAlphaBeta {
         if (maxDepth == 0 || board.isGameOver()) {
             LEAF_NODES_EVALUATED++;
             board.printBoardOnly();
-            Score score = Evaluator.getBoardValue(board);
+            Score score = Evaluator.getBoardValue(board, true);
             log.info("Score = {}, Max Depth = {}, isGameOver = {}, Score = {}", score, maxDepth, board.isGameOver());
 
             return new ScoreMoves(score, new ArrayList<>(currentMovePath));

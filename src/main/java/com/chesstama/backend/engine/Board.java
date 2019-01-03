@@ -128,6 +128,10 @@ Row  +----+----+----+----+----+
                    .collect(Collectors.toList());
     }
 
+    public void toggleCurrentPlayer() {
+        setCurrentPlayer(getCurrentPlayer().getOpponent());
+    }
+
     public void makeMove(final Move move) {
         if (gameOver) {
             throw new RuntimeException("Game is over and was already won by " + gameWinner.get());
