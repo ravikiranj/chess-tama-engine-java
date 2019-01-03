@@ -30,11 +30,10 @@ public class MiniMaxTester {
         return scoreMoves;
     }
 
-    private static ScoreMoves getMiniMaxWithAlphaBetaResult(final int maxDepth) {
+    public static ScoreMoves getMiniMaxWithAlphaBetaResult(final Board board, final int maxDepth) {
         MiniMaxWithAlphaBeta.LEAF_NODES_EVALUATED = 0;
         long startTime = System.currentTimeMillis();
 
-        Board board = new Board.Builder().build();
         ScoreMoves alpha = new ScoreMoves(Score.MIN_SCORE, new ArrayList<>());
         ScoreMoves beta = new ScoreMoves(Score.MAX_SCORE, new ArrayList<>());
 
@@ -48,5 +47,10 @@ public class MiniMaxTester {
         MiniMaxWithAlphaBeta.LEAF_NODES_EVALUATED = 0;
 
         return scoreMoves;
+
+    }
+
+    private static ScoreMoves getMiniMaxWithAlphaBetaResult(final int maxDepth) {
+        return getMiniMaxWithAlphaBetaResult(new Board.Builder().build(), maxDepth);
     }
 }

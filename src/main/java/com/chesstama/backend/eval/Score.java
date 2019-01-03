@@ -10,9 +10,8 @@ public class Score implements Comparable<Score> {
     public static final Score MIN_SCORE;
 
     static {
-        MAX_SCORE = new Score(EvalRule.OPP_KING_CAPTURE.getScore() * 100);
-
-        MIN_SCORE = new Score(EvalRule.KING_CAPTURE.getScore() * 100);
+        MAX_SCORE = new Score(EvalRule.OPP_KING_CAPTURE.getScore() - 1);
+        MIN_SCORE = new Score(EvalRule.KING_CAPTURE.getScore() + 1);
     }
 
     private static final ScoreMapComparator SCORE_MAP_COMPARATOR = new ScoreMapComparator();

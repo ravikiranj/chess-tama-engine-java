@@ -214,10 +214,14 @@ Row  +----+----+----+----+----+
         if (currentPlayer == Player.P1) {
             // kingPos and pawnPositions is used to set P1 King & P1 Pawns and vice-versa
             updateKingAndPawnPositions(kingPos, pawnPositions, opponentKingPos, opponentPawnPositions);
-            currentPlayer = Player.P2;
+            if (!gameOver) {
+                currentPlayer = Player.P2;
+            }
         } else {
             updateKingAndPawnPositions(opponentKingPos, opponentPawnPositions, kingPos, pawnPositions);
-            currentPlayer = Player.P1;
+            if (!gameOver) {
+                currentPlayer = Player.P1;
+            }
         }
 
     }

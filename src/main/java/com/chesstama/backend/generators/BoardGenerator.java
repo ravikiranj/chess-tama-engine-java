@@ -1,9 +1,14 @@
 package com.chesstama.backend.generators;
 
 import com.chesstama.backend.engine.Board;
+import com.chesstama.backend.engine.Card;
+import com.chesstama.backend.engine.Player;
+import com.chesstama.backend.eval.ScoreMoves;
+import com.chesstama.backend.testers.MiniMaxTester;
 import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -23,26 +28,42 @@ public class BoardGenerator {
     public static void main(final String[] args) {
         final String[][] board = new String[][]{
             {
-                    P2, ET, ET, ET, P2
+                    P2, ET, P2, ET, P2
             },
             {
-                    ET, ET, K2, ET, ET
+                    ET, ET, K2, ET, P2
             },
             {
-                    ET, P2, P1, P2, K1
+                    ET, ET, ET, ET, ET
             },
             {
-                    ET, P1, ET, P1, ET
+                    ET, ET, K1, P1, ET
             },
             {
-                    P1, ET, ET, ET, ET
+                    P1, P1, ET, ET, ET
             },
         };
 
-        //Board chessTamaBoard = getBoard(board);
-        Board chessTamaBoard = new Board.Builder().build();
+        Board chessTamaBoard = getBoard(board);
+        chessTamaBoard.setCurrentPlayer(Player.P2);
+
+        List<Card> p2Cards = chessTamaBoard.getP2Cards();
+        p2Cards.clear();
+        p2Cards.add(Card.BOAR);
+        p2Cards.add(Card.TIGER);
+        chessTamaBoard.setUpcomingCard(Player.P2, Card.GOOSE);
+
+        List<Card> p1Cards = chessTamaBoard.getP1Cards();
+        p1Cards.clear();
+        p1Cards.add(Card.EEL);
+        p1Cards.add(Card.FROG);
+        chessTamaBoard.setUpcomingCard(Player.P1, Card.EMPTY);
+
+        //Board chessTamaBoard = new Board.Builder().build();
         log.info("Board = {}", chessTamaBoard);
         chessTamaBoard.printBoardOnly();
+        ScoreMoves scoreMoves = MiniMaxTester.getMiniMaxWithAlphaBetaResult(chessTamaBoard, 1);
+        log.info("ScoreMoves = {}", scoreMoves);
     }
 
     @SuppressWarnings({"PMD.UseVarargs"})
