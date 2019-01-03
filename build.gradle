@@ -45,7 +45,7 @@ wrapper {
 task app(type: JavaExec, dependsOn: 'build') {
     classpath = sourceSets.main.runtimeClasspath
 
-    main = 'com.chesstama.App'
+    main = 'com.chesstama.backend.generators.BoardGenerator'
     if (project.hasProperty("appArgs")) {
         args Eval.me(appArgs)
     }

@@ -37,6 +37,7 @@ public final class MiniMaxWithAlphaBeta {
                                          final List<Move> currentMovePath) {
         if (maxDepth == 0 || board.isGameOver()) {
             LEAF_NODES_EVALUATED++;
+            board.printBoardOnly();
             Score score = Evaluator.getBoardValue(board);
             log.info("Score = {}, Max Depth = {}, isGameOver = {}, Score = {}", score, maxDepth, board.isGameOver());
 
@@ -73,6 +74,8 @@ public final class MiniMaxWithAlphaBeta {
 
                     // Save board state
                     Board boardCopy = board.copy();
+
+                    printBoardAndMove(board, move, maxDepth);
 
                     // Make move
                     board.makeMove(move);
@@ -135,6 +138,8 @@ public final class MiniMaxWithAlphaBeta {
                     // Save board state
                     Board boardCopy = board.copy();
 
+                    printBoardAndMove(board, move, maxDepth);
+
                     // Make move
                     board.makeMove(move);
 
@@ -174,6 +179,15 @@ public final class MiniMaxWithAlphaBeta {
 
             return scoreMoves;
         }
+    }
+
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    private static void printBoardAndMove(final Board board, final Move move, final int maxDepth) {
+        System.out.println("======================");
+        System.out.println("At depth = " + maxDepth + ", Making move = " + move);
+        System.out.println("======================");
+        board.printBoardOnly();
+        System.out.println("======================");
     }
 
     private static boolean isValidMove(final Set<Position> rawPiecePositions,

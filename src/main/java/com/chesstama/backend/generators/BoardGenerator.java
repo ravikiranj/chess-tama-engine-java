@@ -28,19 +28,19 @@ public class BoardGenerator {
     public static void main(final String[] args) {
         final String[][] board = new String[][]{
             {
-                    P2, ET, P2, ET, P2
+                    P2, P2, ET, ET, P2
             },
             {
-                    ET, ET, K2, ET, P2
+                    ET, ET, ET, P2, K2
             },
             {
-                    ET, ET, ET, ET, ET
+                    ET, ET, ET, P1, ET
             },
             {
-                    ET, ET, K1, P1, ET
+                    ET, ET, P1, ET, P1
             },
             {
-                    P1, P1, ET, ET, ET
+                    P1, ET, K1, ET, ET
             },
         };
 
@@ -49,21 +49,24 @@ public class BoardGenerator {
 
         List<Card> p2Cards = chessTamaBoard.getP2Cards();
         p2Cards.clear();
-        p2Cards.add(Card.BOAR);
-        p2Cards.add(Card.TIGER);
-        chessTamaBoard.setUpcomingCard(Player.P2, Card.GOOSE);
+        p2Cards.add(Card.ELEPHANT);
+        p2Cards.add(Card.GOOSE);
+        chessTamaBoard.setUpcomingCard(Player.P2, Card.HORSE);
 
         List<Card> p1Cards = chessTamaBoard.getP1Cards();
         p1Cards.clear();
-        p1Cards.add(Card.EEL);
-        p1Cards.add(Card.FROG);
+        p1Cards.add(Card.DRAGON);
+        p1Cards.add(Card.MONKEY);
         chessTamaBoard.setUpcomingCard(Player.P1, Card.EMPTY);
 
         //Board chessTamaBoard = new Board.Builder().build();
         log.info("Board = {}", chessTamaBoard);
         chessTamaBoard.printBoardOnly();
-        ScoreMoves scoreMoves = MiniMaxTester.getMiniMaxWithAlphaBetaResult(chessTamaBoard, 1);
+        int maxDepth = 1;
+        ScoreMoves scoreMoves = MiniMaxTester.getMiniMaxWithAlphaBetaResult(chessTamaBoard, maxDepth);
         log.info("ScoreMoves = {}", scoreMoves);
+        log.info("Best Score = {}", scoreMoves.getScore().getTotalScore());
+        log.info("Best Move = {}", scoreMoves.getMoves().get(0));
     }
 
     @SuppressWarnings({"PMD.UseVarargs"})

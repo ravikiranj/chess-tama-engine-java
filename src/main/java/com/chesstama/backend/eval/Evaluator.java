@@ -24,7 +24,7 @@ public final class Evaluator {
     public static Score getBoardValue(final Board board) {
         if (board.isGameOver()) {
             Player winner = board.getGameWinner().get();
-            return winner == board.getCurrentPlayer() ? Score.MAX_SCORE : Score.MIN_SCORE;
+            return winner == board.getCurrentPlayer() ? Score.GAME_WON_SCORE : Score.GAME_LOST_SCORE;
         }
 
         Score totalScore = new Score();

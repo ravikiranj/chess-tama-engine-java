@@ -1,5 +1,8 @@
 package com.chesstama.backend.eval;
 
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Ordering;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -30,7 +33,11 @@ public class ScoreMoves implements Comparable<ScoreMoves> {
 
     @Override
     public int compareTo(final ScoreMoves o) {
-        return this.score.compareTo(o.getScore());
+        return ComparisonChain.start()
+                              .compare(this.score, o.getScore())
+                              // Prefer shorter move set if score is the same
+                              .compare(this.moves.size(), o.moves.size(), Ordering.natural().reverse())
+                              .result();
     }
 
     public static ScoreMoves max(final ScoreMoves o1, final ScoreMoves o2) {
@@ -38,7 +45,7 @@ public class ScoreMoves implements Comparable<ScoreMoves> {
     }
 
     public static ScoreMoves min(final ScoreMoves o1, final ScoreMoves o2) {
-        return o1.compareTo(o2) >= 0 ? o2 : o1;
+        return o1.compareTo(o2) > 0 ? o2 : o1;
     }
 
     public boolean isGreaterThan(final ScoreMoves o) {

@@ -6,13 +6,10 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Score implements Comparable<Score> {
-    public static final Score MAX_SCORE;
-    public static final Score MIN_SCORE;
-
-    static {
-        MAX_SCORE = new Score(EvalRule.OPP_KING_CAPTURE.getScore() - 1);
-        MIN_SCORE = new Score(EvalRule.KING_CAPTURE.getScore() + 1);
-    }
+    public static final Score MAX_SCORE = new Score(EvalRule.MAX_SCORE.getScore());
+    public static final Score MIN_SCORE = new Score(EvalRule.MIN_SCORE.getScore());
+    public static final Score GAME_WON_SCORE = new Score(EvalRule.GAME_WON.getScore());
+    public static final Score GAME_LOST_SCORE = new Score(EvalRule.GAME_LOST.getScore());
 
     private static final ScoreMapComparator SCORE_MAP_COMPARATOR = new ScoreMapComparator();
 
