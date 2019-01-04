@@ -31,13 +31,13 @@ public class BoardGenerator {
                     P2, P2, ET, ET, P2
             },
             {
-                    ET, ET, ET, P2, K2
+                    ET, ET, ET, ET, K2
             },
             {
-                    ET, ET, ET, P1, ET
+                    ET, ET, P1, ET, ET
             },
             {
-                    ET, ET, P1, ET, P1
+                    ET, ET, ET, ET, ET
             },
             {
                     P1, ET, K1, ET, ET
@@ -49,24 +49,31 @@ public class BoardGenerator {
 
         List<Card> p2Cards = chessTamaBoard.getP2Cards();
         p2Cards.clear();
-        p2Cards.add(Card.ELEPHANT);
-        p2Cards.add(Card.GOOSE);
-        chessTamaBoard.setUpcomingCard(Player.P2, Card.HORSE);
+        p2Cards.add(Card.OX);
+        p2Cards.add(Card.FROG);
+        chessTamaBoard.setUpcomingCard(Player.P2, Card.COBRA);
 
         List<Card> p1Cards = chessTamaBoard.getP1Cards();
         p1Cards.clear();
         p1Cards.add(Card.DRAGON);
-        p1Cards.add(Card.MONKEY);
+        p1Cards.add(Card.HORSE);
         chessTamaBoard.setUpcomingCard(Player.P1, Card.EMPTY);
 
         //Board chessTamaBoard = new Board.Builder().build();
         log.info("Board = {}", chessTamaBoard);
-        chessTamaBoard.printBoardOnly();
-        int maxDepth = 1;
+        Board chessTamaBoardCopy = chessTamaBoard.copy();
+        int maxDepth = 7;
         ScoreMoves scoreMoves = MiniMaxTester.getMiniMaxWithAlphaBetaResult(chessTamaBoard, maxDepth);
         log.info("ScoreMoves = {}", scoreMoves);
         log.info("Best Score = {}", scoreMoves.getScore().getTotalScore());
         log.info("Best Move = {}", scoreMoves.getMoves().get(0));
+
+        log.info("Before");
+        chessTamaBoardCopy.printBoardOnly();
+
+        log.info("\nAfter");
+        chessTamaBoardCopy.makeMove(scoreMoves.getMoves().get(0));
+        chessTamaBoardCopy.printBoardOnly();
     }
 
     @SuppressWarnings({"PMD.UseVarargs"})
